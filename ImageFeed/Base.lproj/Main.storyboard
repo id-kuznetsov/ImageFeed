@@ -50,9 +50,9 @@
                                                     <nil key="highlightedColor"/>
                                                 </label>
                                                 <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="b3z-hi-2cO" userLabel="Like Button">
-                                                    <rect key="frame" x="333" y="12" width="44" height="44"/>
+                                                    <rect key="frame" x="335" y="12" width="42" height="42"/>
                                                     <constraints>
-                                                        <constraint firstAttribute="width" constant="44" id="3Op-p6-Sfv"/>
+                                                        <constraint firstAttribute="width" constant="42" id="3Op-p6-Sfv"/>
                                                         <constraint firstAttribute="width" secondItem="b3z-hi-2cO" secondAttribute="height" multiplier="1:1" id="xca-7I-sOz"/>
                                                     </constraints>
                                                     <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
