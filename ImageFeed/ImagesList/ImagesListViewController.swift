@@ -7,20 +7,11 @@
 
 import UIKit
 
-class ImagesListViewController: UIViewController {
+final class ImagesListViewController: UIViewController {
     
     @IBOutlet private var tableView: UITableView!
     
     private let photosName: [String] = Array(0..<20).map{ "\($0)" }
-    
-    private lazy var currentDate = Date()
-    private lazy var dateFormatter: DateFormatter = {
-        let formatter = DateFormatter()
-        formatter.dateStyle = .long
-        formatter.timeStyle = .none
-        formatter.locale = Locale(identifier: "ru_RU")
-        return formatter
-    }()
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -34,19 +25,7 @@ class ImagesListViewController: UIViewController {
 
 extension ImagesListViewController {
     func configCell(for cell: ImagesListCell, with indexPath: IndexPath) {
-        guard let image = UIImage(named: "\(indexPath.row)") else { return }
-        
-        cell.tableImage.image = image
-        
-        cell.dateLabel.text = dateFormatter.string(from: currentDate)
-        
-        if indexPath.row % 2 == 0 {
-            cell.likeButton.imageView?.image = UIImage.favoritesActive
-        } else {
-            cell.likeButton.imageView?.image = UIImage.favoritesNoActive
-        }
-        
-        cell.setGradient()
+        cell.configCell(cell: cell, indexPath: indexPath)
     }
 }
 

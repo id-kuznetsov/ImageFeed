@@ -10,11 +10,34 @@ import UIKit
 final class ImagesListCell: UITableViewCell {
     static let reuseIdentifier = "ImagesListCell"
     
-    @IBOutlet var tableImage: UIImageView!
-    @IBOutlet var likeButton: UIButton!
-    @IBOutlet var dateLabel: UILabel!
+    @IBOutlet private var tableImage: UIImageView!
+    @IBOutlet private var likeButton: UIButton!
+    @IBOutlet private var dateLabel: UILabel!
     @IBOutlet private var gradient: UIView!
     
+    private lazy var currentDate = Date()
+    private lazy var dateFormatter: DateFormatter = {
+        let formatter = DateFormatter()
+        formatter.dateStyle = .long
+        formatter.timeStyle = .none
+        formatter.locale = Locale(identifier: "ru_RU")
+        return formatter
+    }()
+    
+    func configCell(cell:ImagesListCell, indexPath: IndexPath) {
+        guard let image = UIImage(named: "\(indexPath.row)") else { return }
+        
+        tableImage.image = image
+        
+        dateLabel.text = dateFormatter.string(from: currentDate)
+        
+        if indexPath.row % 2 == 0 {
+            likeButton.imageView?.image = UIImage.favoritesActive
+        } else {
+            likeButton.imageView?.image = UIImage.favoritesNoActive
+        }
+        setGradient()
+    }
     func setGradient() {
         gradient.layer.masksToBounds = true
         gradient.layer.cornerRadius = 16
