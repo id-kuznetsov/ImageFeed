@@ -31,11 +31,11 @@ final class ImagesListCell: UITableViewCell {
         
         dateLabel.text = dateFormatter.string(from: currentDate)
         
-        if indexPath.row % 2 == 0 {
-            likeButton.imageView?.image = UIImage.favoritesActive
-        } else {
-            likeButton.imageView?.image = UIImage.favoritesNoActive
-        }
+        let isLiked = UIImage.favoritesActive
+        let notLiked = UIImage.favoritesNoActive
+        
+        likeButton.imageView?.image = indexPath.row % 2 == 0 ? isLiked : notLiked
+        
         setGradient()
     }
     func setGradient() {
