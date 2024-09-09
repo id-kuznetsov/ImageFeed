@@ -9,6 +9,10 @@ import UIKit
 
 final class SingleImageViewController: UIViewController {
     
+    // MARK: - IB Outlets
+    @IBOutlet private var scrollView: UIScrollView!
+    @IBOutlet private var imageView: UIImageView!
+    // MARK: - Properties
     var image: UIImage? {
         didSet {
             guard isViewLoaded, let image else { return }
@@ -18,9 +22,7 @@ final class SingleImageViewController: UIViewController {
             rescaleAndCenterImageInScrollView(image: image)
         }
     }
-    @IBOutlet private var scrollView: UIScrollView!
-    @IBOutlet private var imageView: UIImageView!
-    
+    // MARK: - lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
         guard let image else { return }
@@ -32,7 +34,7 @@ final class SingleImageViewController: UIViewController {
         scrollView.minimumZoomScale = 0.1
         scrollView.maximumZoomScale = 1.25
     }
-    
+    // MARK: - private methods
     private func rescaleAndCenterImageInScrollView(image: UIImage) {
         let minZoomScale = scrollView.minimumZoomScale
         let maxZoomScale = scrollView.maximumZoomScale
@@ -51,23 +53,20 @@ final class SingleImageViewController: UIViewController {
     }
     
     private func centerImage() {
-        //TODO: подумать как сделать
         var insets = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 0)
         let visibleRectSize = scrollView.bounds.size
-        print(visibleRectSize)
         let newContentSize = scrollView.contentSize
-        print(newContentSize)
         if visibleRectSize.width > newContentSize.width {
-            insets.left = (visibleRectSize.width /*- newContentSize.width*/) / 2
-            insets.right = (visibleRectSize.width /*- newContentSize.width*/) / 2
+            insets.left = visibleRectSize.width / 2
+            insets.right = visibleRectSize.width / 2
         }
         if visibleRectSize.height > newContentSize.height {
-            insets.top = (visibleRectSize.height - newContentSize.height) / 2
-            insets.bottom = (visibleRectSize.height - newContentSize.height) / 2
+            insets.top = visibleRectSize.height / 2
+            insets.bottom = visibleRectSize.height / 2
         }
-        scrollView.contentInset = insets // добавляется какое-то смещение слева и сверху
+        scrollView.contentInset = insets
     }
-    
+    // MARK: - IB Actions
     @IBAction private func didTapBackButton() {
         dismiss(animated: true, completion: nil)
     }
@@ -81,7 +80,7 @@ final class SingleImageViewController: UIViewController {
         present(activityController, animated: true)
     }
 }
-
+// MARK: - extensions
 extension SingleImageViewController: UIScrollViewDelegate {
     func viewForZooming(in scrollView: UIScrollView) -> UIView? {
         imageView

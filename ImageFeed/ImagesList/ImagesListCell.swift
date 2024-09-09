@@ -9,12 +9,12 @@ import UIKit
 
 final class ImagesListCell: UITableViewCell {
     static let reuseIdentifier = "ImagesListCell"
-    
+    // MARK: - IB Outlets
     @IBOutlet private var tableImage: UIImageView!
     @IBOutlet private var likeButton: UIButton!
     @IBOutlet private var dateLabel: UILabel!
     @IBOutlet private var gradient: UIView!
-    
+    // MARK: - Properties
     private lazy var currentDate = Date()
     private lazy var dateFormatter: DateFormatter = {
         let formatter = DateFormatter()

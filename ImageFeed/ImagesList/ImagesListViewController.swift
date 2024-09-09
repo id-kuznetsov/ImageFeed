@@ -8,11 +8,11 @@
 import UIKit
 
 final class ImagesListViewController: UIViewController {
+    // MARK: - IB Outlets
+    @IBOutlet private var tableView: UITableView!
+    // MARK: - Properties
     
     private let showSingleImageSegueIdentifier = "ShowSingleImage"
-    
-    @IBOutlet private var tableView: UITableView!
-    
     private let photosName: [String] = Array(0..<20).map{ "\($0)" }
     
     override func viewDidLoad() {
@@ -66,7 +66,7 @@ final class ImagesListViewController: UIViewController {
             return imageListCell
         }
     }
-    
+
     extension ImagesListViewController: UITableViewDelegate {
         func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
             guard let image = UIImage(named: "\(indexPath.row)") else { return 0 }
