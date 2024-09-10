@@ -70,6 +70,16 @@ final class ProfileViewController: UIViewController {
         super.viewDidLoad()
         setProfileView()
     }
+    // MARK: - actions
+    @objc
+    private func didLogoutButtonTapped() {
+        loginLabel.removeFromSuperview()
+        nameLabel.removeFromSuperview()
+        statusLabel.removeFromSuperview()
+        profileImageView.image = UIImage(systemName: "person.crop.circle.fill")
+        profileImageView.tintColor = .ypGrey
+    }
+    
     
     private func setProfileView() {
         view.backgroundColor = .ypBlack
@@ -80,7 +90,7 @@ final class ProfileViewController: UIViewController {
         }
         
         NSLayoutConstraint.activate(
-            profileImageViewConstraints() + 
+            profileImageViewConstraints() +
             exitButtonViewConstraints() +
             nameLabelViewConstraints() +
             loginLabelViewConstraints() +
@@ -89,6 +99,7 @@ final class ProfileViewController: UIViewController {
             emptyFavouritesImageViewConstraints()
         )
     }
+    
     // MARK: - constraints
     private func profileImageViewConstraints() -> [NSLayoutConstraint] {
         [profileImageView.widthAnchor.constraint(equalToConstant: 70),
@@ -124,12 +135,11 @@ final class ProfileViewController: UIViewController {
     
     private func favouritesLabelViewConstraints() -> [NSLayoutConstraint] {
         [favouritesLabel.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: 16),
-         favouritesLabel.topAnchor.constraint(equalTo: statusLabel.bottomAnchor, constant: 24)
+         favouritesLabel.topAnchor.constraint(equalTo: profileImageView.bottomAnchor, constant: 100)
         ]
     }
     
     private func emptyFavouritesImageViewConstraints() -> [NSLayoutConstraint] {
-        // расчет расстояния между верхом
         [emptyFavouritesImageView.widthAnchor.constraint(equalToConstant: 115),
          emptyFavouritesImageView.heightAnchor.constraint(equalTo: emptyFavouritesImageView.widthAnchor, multiplier: 1),
          emptyFavouritesImageView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
@@ -137,11 +147,6 @@ final class ProfileViewController: UIViewController {
         ]
     }
     
-    
-    
-    // MARK: - actions
-    @objc
-    private func didLogoutButtonTapped() {
-        
-    }
 }
+
+
