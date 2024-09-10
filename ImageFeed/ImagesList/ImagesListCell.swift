@@ -23,7 +23,7 @@ final class ImagesListCell: UITableViewCell {
         formatter.locale = Locale(identifier: "ru_RU")
         return formatter
     }()
-    
+    // MARK: - Methods
     func configCell(cell:ImagesListCell, indexPath: IndexPath) {
         guard let image = UIImage(named: "\(indexPath.row)") else { return }
         
@@ -38,6 +38,7 @@ final class ImagesListCell: UITableViewCell {
         
         setGradient()
     }
+    
     func setGradient() {
         gradient.layer.masksToBounds = true
         gradient.layer.cornerRadius = 16
