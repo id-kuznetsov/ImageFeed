@@ -15,6 +15,13 @@ final class ProfileViewController: UIViewController {
         return profileImage
     }()
     
+    private lazy var profileInfoStackView: UIStackView = {
+            let stackView = UIStackView()
+            stackView.axis = .vertical
+            stackView.spacing = 8
+            return stackView
+        }()
+    
     private lazy var nameLabel: UILabel = {
         let nameLabel = UILabel()
         nameLabel.text = "Екатерина Новикова"
@@ -80,11 +87,13 @@ final class ProfileViewController: UIViewController {
         profileImageView.tintColor = .ypGrey
     }
     
-    
     private func setProfileView() {
         view.backgroundColor = .ypBlack
+        profileInfoStackView.addArrangedSubview(nameLabel)
+        profileInfoStackView.addArrangedSubview(loginLabel)
+        profileInfoStackView.addArrangedSubview(statusLabel)
         
-        [profileImageView, exitButton, nameLabel, loginLabel, statusLabel, favouritesLabel, emptyFavouritesImageView].forEach{
+        [profileImageView, exitButton, profileInfoStackView, favouritesLabel, emptyFavouritesImageView].forEach{
             $0.translatesAutoresizingMaskIntoConstraints = false
             view.addSubview($0)
         }
@@ -92,9 +101,7 @@ final class ProfileViewController: UIViewController {
         NSLayoutConstraint.activate(
             profileImageViewConstraints() +
             exitButtonViewConstraints() +
-            nameLabelViewConstraints() +
-            loginLabelViewConstraints() +
-            statusLabelViewConstraints() +
+            profileStackViewConstraints() +
             favouritesLabelViewConstraints() +
             emptyFavouritesImageViewConstraints()
         )
@@ -102,39 +109,28 @@ final class ProfileViewController: UIViewController {
     
     // MARK: - constraints
     private func profileImageViewConstraints() -> [NSLayoutConstraint] {
-        [profileImageView.widthAnchor.constraint(equalToConstant: 70),
-         profileImageView.heightAnchor.constraint(equalToConstant: 70),
-         profileImageView.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: 16),
+        [profileImageView.widthAnchor.constraint(equalToConstant: Constants.profileImageSize),
+         profileImageView.heightAnchor.constraint(equalToConstant: Constants.profileImageSize),
+         profileImageView.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: Constants.leadingSize),
          profileImageView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 32)
         ]
     }
     private func exitButtonViewConstraints() -> [NSLayoutConstraint] {
-        [exitButton.widthAnchor.constraint(equalToConstant: 44),
-         exitButton.heightAnchor.constraint(equalToConstant: 44),
+        [exitButton.widthAnchor.constraint(equalToConstant: Constants.buttonsSize),
+         exitButton.heightAnchor.constraint(equalToConstant: Constants.buttonsSize),
          exitButton.centerYAnchor.constraint(equalTo: profileImageView.centerYAnchor),
          exitButton.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor, constant: -16)
         ]
     }
-    private func nameLabelViewConstraints() -> [NSLayoutConstraint] {
-        [nameLabel.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: 16),
-         nameLabel.topAnchor.constraint(equalTo: profileImageView.bottomAnchor, constant: 8)
-        ]
-    }
     
-    private func loginLabelViewConstraints() -> [NSLayoutConstraint] {
-        [loginLabel.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: 16),
-         loginLabel.topAnchor.constraint(equalTo: nameLabel.bottomAnchor, constant: 8)
-        ]
-    }
-    
-    private func statusLabelViewConstraints() -> [NSLayoutConstraint] {
-        [statusLabel.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: 16),
-         statusLabel.topAnchor.constraint(equalTo: loginLabel.bottomAnchor, constant: 8)
+    private func profileStackViewConstraints() -> [NSLayoutConstraint] {
+        [profileInfoStackView.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: Constants.leadingSize),
+         profileInfoStackView.topAnchor.constraint(equalTo: profileImageView.bottomAnchor, constant: 8)
         ]
     }
     
     private func favouritesLabelViewConstraints() -> [NSLayoutConstraint] {
-        [favouritesLabel.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: 16),
+        [favouritesLabel.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: Constants.leadingSize),
          favouritesLabel.topAnchor.constraint(equalTo: profileImageView.bottomAnchor, constant: 100)
         ]
     }
@@ -147,6 +143,15 @@ final class ProfileViewController: UIViewController {
         ]
     }
     
+}
+// MARK: - extensions
+
+extension ProfileViewController {
+    private enum Constants {
+        static let profileImageSize: CGFloat = 70
+        static let buttonsSize: CGFloat = 70
+        static let leadingSize: CGFloat = 16
+    }
 }
 
 
