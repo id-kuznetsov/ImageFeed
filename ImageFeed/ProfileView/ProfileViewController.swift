@@ -16,11 +16,11 @@ final class ProfileViewController: UIViewController {
     }()
     
     private lazy var profileInfoStackView: UIStackView = {
-            let stackView = UIStackView()
-            stackView.axis = .vertical
-            stackView.spacing = 8
-            return stackView
-        }()
+        let stackView = UIStackView()
+        stackView.axis = .vertical
+        stackView.spacing = 8
+        return stackView
+    }()
     
     private lazy var nameLabel: UILabel = {
         let nameLabel = UILabel()
@@ -89,9 +89,7 @@ final class ProfileViewController: UIViewController {
     
     private func setProfileView() {
         view.backgroundColor = .ypBlack
-        profileInfoStackView.addArrangedSubview(nameLabel)
-        profileInfoStackView.addArrangedSubview(loginLabel)
-        profileInfoStackView.addArrangedSubview(statusLabel)
+        addLabelsInStackView()
         
         [profileImageView, exitButton, profileInfoStackView, favouritesLabel, emptyFavouritesImageView].forEach{
             $0.translatesAutoresizingMaskIntoConstraints = false
@@ -106,6 +104,13 @@ final class ProfileViewController: UIViewController {
             emptyFavouritesImageViewConstraints()
         )
     }
+    
+    private func addLabelsInStackView() {
+        profileInfoStackView.addArrangedSubview(nameLabel)
+        profileInfoStackView.addArrangedSubview(loginLabel)
+        profileInfoStackView.addArrangedSubview(statusLabel)
+    }
+    
     
     // MARK: - constraints
     private func profileImageViewConstraints() -> [NSLayoutConstraint] {
