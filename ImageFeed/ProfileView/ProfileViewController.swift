@@ -65,10 +65,20 @@ final class ProfileViewController: UIViewController {
         return favouritesLabel
     }()
     
+    private lazy var emptyFavouritesStackView: UIStackView = {
+        let stackView = UIStackView()
+        stackView.axis = .vertical
+        stackView.alignment = .center
+        stackView.distribution = .equalCentering
+        return stackView
+    }()
+    
     private lazy var emptyFavouritesImageView: UIImageView = {
         let favouritesImageView = UIImageView()
         favouritesImageView.image = UIImage(systemName: "square.3.layers.3d.down.right")
         favouritesImageView.tintColor = .ypWhite
+        favouritesImageView.contentMode = .scaleAspectFit
+        favouritesImageView.translatesAutoresizingMaskIntoConstraints = false
         return favouritesImageView
     }()
     
@@ -80,18 +90,19 @@ final class ProfileViewController: UIViewController {
     // MARK: - actions
     @objc
     private func didLogoutButtonTapped() {
-        loginLabel.removeFromSuperview()
-        nameLabel.removeFromSuperview()
-        statusLabel.removeFromSuperview()
+        loginLabel.isHidden = true
+        nameLabel.isHidden = true
+        statusLabel.isHidden = true
         profileImageView.image = UIImage(systemName: "person.crop.circle.fill")
         profileImageView.tintColor = .ypGrey
     }
     
     private func setProfileView() {
         view.backgroundColor = .ypBlack
-        addLabelsInStackView()
+        addLabelsInProfileInfoStackView()
+        addFavouritesPlaceHolder()
         
-        [profileImageView, exitButton, profileInfoStackView, favouritesLabel, emptyFavouritesImageView].forEach{
+        [profileImageView, exitButton, profileInfoStackView, favouritesLabel, emptyFavouritesStackView].forEach{
             $0.translatesAutoresizingMaskIntoConstraints = false
             view.addSubview($0)
         }
@@ -101,14 +112,19 @@ final class ProfileViewController: UIViewController {
             exitButtonViewConstraints() +
             profileStackViewConstraints() +
             favouritesLabelViewConstraints() +
+            emptyFavouritesStackViewConstraints() +
             emptyFavouritesImageViewConstraints()
         )
     }
     
-    private func addLabelsInStackView() {
+    private func addLabelsInProfileInfoStackView() {
         profileInfoStackView.addArrangedSubview(nameLabel)
         profileInfoStackView.addArrangedSubview(loginLabel)
         profileInfoStackView.addArrangedSubview(statusLabel)
+    }
+    
+    private func addFavouritesPlaceHolder() {
+        emptyFavouritesStackView.addArrangedSubview(emptyFavouritesImageView)
     }
     
     
@@ -136,16 +152,21 @@ final class ProfileViewController: UIViewController {
     
     private func favouritesLabelViewConstraints() -> [NSLayoutConstraint] {
         [favouritesLabel.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: Constants.leadingSize),
-         favouritesLabel.topAnchor.constraint(equalTo: profileImageView.bottomAnchor, constant: 100)
+         favouritesLabel.topAnchor.constraint(equalTo: profileImageView.bottomAnchor, constant: 100),
+         favouritesLabel.heightAnchor.constraint(equalToConstant: 23)
+        ]
+    }
+    
+    private func emptyFavouritesStackViewConstraints() -> [NSLayoutConstraint] {
+        [emptyFavouritesStackView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+         emptyFavouritesStackView.topAnchor.constraint(equalTo: favouritesLabel.bottomAnchor, constant: 0),
+         emptyFavouritesStackView.bottomAnchor.constraint(equalTo: view.layoutMarginsGuide.bottomAnchor)
         ]
     }
     
     private func emptyFavouritesImageViewConstraints() -> [NSLayoutConstraint] {
-        [emptyFavouritesImageView.widthAnchor.constraint(equalToConstant: 115),
-         emptyFavouritesImageView.heightAnchor.constraint(equalTo: emptyFavouritesImageView.widthAnchor, multiplier: 1),
-         emptyFavouritesImageView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-         emptyFavouritesImageView.topAnchor.constraint(equalTo: favouritesLabel.bottomAnchor, constant: 100)
-        ]
+        [emptyFavouritesImageView.widthAnchor.constraint(equalToConstant: Constants.emptyFavouritesSize),
+         emptyFavouritesImageView.heightAnchor.constraint(equalToConstant: Constants.emptyFavouritesSize)]
     }
     
 }
@@ -156,6 +177,7 @@ extension ProfileViewController {
         static let profileImageSize: CGFloat = 70
         static let buttonsSize: CGFloat = 70
         static let leadingSize: CGFloat = 16
+        static let emptyFavouritesSize: CGFloat = 115
     }
 }
 
