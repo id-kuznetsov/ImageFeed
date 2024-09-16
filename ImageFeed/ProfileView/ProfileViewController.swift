@@ -90,9 +90,7 @@ final class ProfileViewController: UIViewController {
     // MARK: - actions
     @objc
     private func didLogoutButtonTapped() {
-        loginLabel.isHidden = true
-        nameLabel.isHidden = true
-        statusLabel.isHidden = true
+        profileInfoStackView.isHidden = true
         profileImageView.image = UIImage(systemName: "person.crop.circle.fill")
         profileImageView.tintColor = .ypGrey
     }
@@ -159,8 +157,10 @@ final class ProfileViewController: UIViewController {
     
     private func emptyFavouritesStackViewConstraints() -> [NSLayoutConstraint] {
         [emptyFavouritesStackView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-         emptyFavouritesStackView.topAnchor.constraint(equalTo: favouritesLabel.bottomAnchor, constant: 0),
-         emptyFavouritesStackView.bottomAnchor.constraint(equalTo: view.layoutMarginsGuide.bottomAnchor)
+         emptyFavouritesStackView.topAnchor.constraint(equalTo: favouritesLabel.bottomAnchor),
+         emptyFavouritesStackView.bottomAnchor.constraint(equalTo: view.layoutMarginsGuide.bottomAnchor),
+         emptyFavouritesStackView.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: Constants.leadingSize),
+         emptyFavouritesStackView.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor, constant: Constants.leadingSize)
         ]
     }
     
