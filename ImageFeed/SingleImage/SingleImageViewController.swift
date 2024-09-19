@@ -9,7 +9,7 @@ import UIKit
 
 final class SingleImageViewController: UIViewController {
     
-    // MARK: - IB Outlets
+    // MARK: - IBOutlet
     @IBOutlet private var scrollView: UIScrollView!
     @IBOutlet private var imageView: UIImageView!
     // MARK: - Properties
