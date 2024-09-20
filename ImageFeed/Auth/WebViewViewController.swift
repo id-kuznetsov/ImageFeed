@@ -13,8 +13,11 @@ final class WebViewViewController: UIViewController {
     enum WebViewConstants {
         static let unsplashAuthorizeURLString = "https://unsplash.com/oauth/authorize"
     }
+    // MARK: - Public Properties
+    weak var delegate: WebViewViewControllerDelegate?
     // MARK: - IBOutlet
     @IBOutlet private var webView: WKWebView!
+    @IBOutlet private var progressView: UIProgressView!
     // MARK: - Private Properties
     
     // MARK: - lifecycle
@@ -26,7 +29,7 @@ final class WebViewViewController: UIViewController {
         
     }
     // MARK: - Public Methods
-    weak var delegate: WebViewViewControllerDelegate?
+    
     // MARK: - IBAction
     
     // MARK: - Private Methods
@@ -78,6 +81,4 @@ extension WebViewViewController: WKNavigationDelegate {
             decisionHandler(.allow) //4
         }
     }
-    
-    
 }
