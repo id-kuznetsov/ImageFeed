@@ -104,9 +104,9 @@ extension WebViewViewController: WKNavigationDelegate {
     ) {
         if let code = code(from: navigationAction) {
             //TODO: process code
-            decisionHandler(.cancel) //3
+            decisionHandler(.cancel)
         } else {
-            decisionHandler(.allow) //4
+            decisionHandler(.allow) 
         }
     }
 }

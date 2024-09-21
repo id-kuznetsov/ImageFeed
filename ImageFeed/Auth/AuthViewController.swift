@@ -10,6 +10,7 @@ import UIKit
 final class AuthViewController: UIViewController {
     // MARK: - Private properties
     private let showWebViewSegueIdentifier = "ShowWebView"
+    private let oauth2Service = OAuth2Service.shared
     // MARK: - lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -45,7 +46,15 @@ final class AuthViewController: UIViewController {
 // MARK: - extension
 extension AuthViewController: WebViewViewControllerDelegate {
     func webViewViewController(_ vc: WebViewViewController, didAuthenticateWithCode code: String) {
-        // TODO: WebViewViewController receive code
+        oauth2Service.fetchOAuthToken(code: code) { result in
+            switch result {
+            case .success(let token):
+                print(token)
+            case .failure(let error):
+                print(error)
+            }
+        }
+        webViewViewControllerDidCancel(vc)
     }
     
     func webViewViewControllerDidCancel(_ vc: WebViewViewController) {

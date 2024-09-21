@@ -160,7 +160,7 @@ final class ProfileViewController: UIViewController {
          emptyFavouritesStackView.topAnchor.constraint(equalTo: favouritesLabel.bottomAnchor),
          emptyFavouritesStackView.bottomAnchor.constraint(equalTo: view.layoutMarginsGuide.bottomAnchor),
          emptyFavouritesStackView.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: Constants.leadingSize),
-         emptyFavouritesStackView.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor, constant: Constants.leadingSize)
+         emptyFavouritesStackView.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor, constant: -Constants.leadingSize)
         ]
     }
     
