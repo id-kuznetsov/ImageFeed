@@ -35,7 +35,7 @@ final class OAuth2Service {
     
     func fetchOAuthToken(
         code: String,
-        handler: @escaping (Result<Data, Error>) -> Void
+        handler: @escaping (Result<String, Error>) -> Void
     ) {
         let request = makeOAuthTokenRequest(code: code)
         
@@ -47,7 +47,8 @@ final class OAuth2Service {
                     let response = try decoder.decode(OAuthTokenResponseBody.self, from: data)
                     let token = response.accessToken
                     OAuth2TokenStorage.shared.token = token
-                    handler(.success(data))
+                    print("Записали токен")
+                    handler(.success(token))
                 }
                 catch {
                     print(error.localizedDescription)

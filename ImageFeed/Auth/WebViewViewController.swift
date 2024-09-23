@@ -9,24 +9,21 @@ import UIKit
 @preconcurrency import WebKit
 
 final class WebViewViewController: UIViewController {
+    // MARK: - IBOutlet
+    @IBOutlet private var webView: WKWebView!
+    @IBOutlet private var progressView: UIProgressView!
     // MARK: - Constants
-    enum WebViewConstants {
+    private enum WebViewConstants {
         static let unsplashAuthorizeURLString = "https://unsplash.com/oauth/authorize"
     }
     // MARK: - Public Properties
     weak var delegate: WebViewViewControllerDelegate?
-    // MARK: - IBOutlet
-    @IBOutlet private var webView: WKWebView!
-    @IBOutlet private var progressView: UIProgressView!
-    // MARK: - Private Properties
-    
     // MARK: - lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
         webView.navigationDelegate = self
         
         loadAuthView()
-        
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -41,7 +38,6 @@ final class WebViewViewController: UIViewController {
         super.viewWillDisappear(animated)
         webView.removeObserver(self, forKeyPath: #keyPath(WKWebView.estimatedProgress), context: nil)
     }
-    
     // MARK: - Public Methods
     override func observeValue(forKeyPath keyPath: String?, of object: Any?, change: [NSKeyValueChangeKey : Any]?, context: UnsafeMutableRawPointer?) {
         if keyPath == #keyPath(WKWebView.estimatedProgress) {
@@ -50,9 +46,6 @@ final class WebViewViewController: UIViewController {
             super.observeValue(forKeyPath: keyPath, of: object, change: change, context: context)
         }
     }
-    
-    // MARK: - IBAction
-    
     // MARK: - Private Methods
     private func loadAuthView() {
         guard var urlComponents = URLComponents(string: WebViewConstants.unsplashAuthorizeURLString) else {
@@ -80,6 +73,21 @@ final class WebViewViewController: UIViewController {
         progressView.progress = Float(webView.estimatedProgress)
         progressView.isHidden = fabs(webView.estimatedProgress - 1.0) <= 0.0001
     }
+}
+// MARK: - extension
+extension WebViewViewController: WKNavigationDelegate {
+    func webView(
+        _ webView: WKWebView,
+        decidePolicyFor navigationAction: WKNavigationAction,
+        decisionHandler: @escaping (WKNavigationActionPolicy) -> Void
+    ) {
+        if let code = code(from: navigationAction) {
+            delegate?.webViewViewController(self, didAuthenticateWithCode: code)
+            decisionHandler(.cancel)
+        } else {
+            decisionHandler(.allow)
+        }
+    }
     
     private func code(from navigationAction: WKNavigationAction) -> String? {
         if
@@ -95,18 +103,4 @@ final class WebViewViewController: UIViewController {
         }
     }
 }
-// MARK: - extension
-extension WebViewViewController: WKNavigationDelegate {
-    func webView(
-        _ webView: WKWebView,
-        decidePolicyFor navigationAction: WKNavigationAction,
-        decisionHandler: @escaping (WKNavigationActionPolicy) -> Void
-    ) {
-        if let code = code(from: navigationAction) {
-            //TODO: process code
-            decisionHandler(.cancel)
-        } else {
-            decisionHandler(.allow) 
-        }
-    }
-}
+

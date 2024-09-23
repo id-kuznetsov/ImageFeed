@@ -11,9 +11,9 @@ final class OAuth2TokenStorage {
     // MARK: - Constants
     static let shared = OAuth2TokenStorage()
     // MARK: - Public Properties
-    var token: String {
+    var token: String? {
         get {
-            storage.string(forKey: Keys.token.rawValue) ?? ""
+            storage.string(forKey: Keys.token.rawValue)
         }
         set {
             storage.set(newValue, forKey: Keys.token.rawValue)
