@@ -8,10 +8,14 @@
 import UIKit
 
 final class SplashViewController: UIViewController {
+    
     // MARK: - Public Properties
+    
     private let storage = OAuth2TokenStorage()
     private let showAuthenticationScreenSegueIdentifier = "showAuthenticationScreen"
+    
     // MARK: - lifycycle
+    
     override func viewDidLoad() {
         super.viewDidLoad()
     }
@@ -25,7 +29,9 @@ final class SplashViewController: UIViewController {
             performSegue(withIdentifier: showAuthenticationScreenSegueIdentifier, sender: nil)
         }
     }
+    
     // MARK: - Private Methods
+    
     private func switchToTabBarController() {
         guard let window = UIApplication.shared.windows.first else {
             assertionFailure("Invalid window configuration")
@@ -37,7 +43,9 @@ final class SplashViewController: UIViewController {
     }
     
 }
+
 // MARK: - extension
+
 extension SplashViewController: AuthViewControllerDelegate {
     func didAuthenticate(_ vc: AuthViewController) {
         vc.dismiss(animated: true)

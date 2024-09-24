@@ -8,12 +8,18 @@
 import UIKit
 
 final class ImagesListViewController: UIViewController {
+    
     // MARK: - IB Outlets
+    
     @IBOutlet private var tableView: UITableView!
+    
     // MARK: - Properties
+    
     private let showSingleImageSegueIdentifier = "ShowSingleImage"
     private let photosName: [String] = Array(0..<20).map{ "\($0)" }
+    
     // MARK: - lifecycle
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -70,7 +76,12 @@ extension ImagesListViewController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         guard let image = UIImage(named: "\(indexPath.row)") else { return 0 }
         
-        let insets = UIEdgeInsets(top: 4, left: 16, bottom: 4, right: 16)
+        let insets = UIEdgeInsets(
+            top: Constants.imageTopConstraint,
+            left: Constants.leadingSize,
+            bottom: Constants.imageBottomConstraint,
+            right: Constants.trailingSize
+        )
         let imageWidth = image.size.width - insets.left - insets.right
         let imageCellWidth = tableView.bounds.width
         let scaleFactor = imageCellWidth / imageWidth
@@ -81,5 +92,14 @@ extension ImagesListViewController: UITableViewDelegate {
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         performSegue(withIdentifier: showSingleImageSegueIdentifier, sender: indexPath)
+    }
+}
+
+extension ImagesListViewController {
+    private enum Constants {
+        static let imageTopConstraint: CGFloat = 4
+        static let imageBottomConstraint: CGFloat = 4
+        static let leadingSize: CGFloat = 16
+        static let trailingSize: CGFloat = 16
     }
 }

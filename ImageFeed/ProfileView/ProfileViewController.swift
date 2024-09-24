@@ -8,7 +8,9 @@
 import UIKit
 
 final class ProfileViewController: UIViewController {
+    
     // MARK: - Private properties
+    
     private lazy var profileImageView: UIImageView = {
         let profileImage = UIImageView()
         profileImage.image = UIImage(named: "avatar")
@@ -83,11 +85,14 @@ final class ProfileViewController: UIViewController {
     }()
     
     // MARK: - lifecycle
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         setProfileView()
     }
+    
     // MARK: - actions
+    
     @objc
     private func didLogoutButtonTapped() {
         profileInfoStackView.isHidden = true
@@ -131,6 +136,7 @@ final class ProfileViewController: UIViewController {
     
     
     // MARK: - constraints
+    
     private func profileImageViewConstraints() -> [NSLayoutConstraint] {
         [profileImageView.widthAnchor.constraint(equalToConstant: Constants.profileImageSize),
          profileImageView.heightAnchor.constraint(equalToConstant: Constants.profileImageSize),
@@ -174,6 +180,7 @@ final class ProfileViewController: UIViewController {
     }
     
 }
+
 // MARK: - extensions
 
 extension ProfileViewController {
