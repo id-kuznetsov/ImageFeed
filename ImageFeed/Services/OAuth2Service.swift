@@ -12,7 +12,7 @@ final class OAuth2Service {
     
     static let shared = OAuth2Service()
     
-    // MARK: - Public Properties
+    // MARK: - Private Properties
     
     private let decoder = SnakeCaseJSONDecoder()
     
