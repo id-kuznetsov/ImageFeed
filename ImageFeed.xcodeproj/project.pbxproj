@@ -6,6 +6,10 @@
 	objectVersion = 76;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		5C3DC6F32CAF2D670014C0ED /* ProgressHUD in Frameworks */ = {isa = PBXBuildFile; productRef = 5C3DC6F22CAF2D670014C0ED /* ProgressHUD */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXFileReference section */
 		5C7187522C80B5150012F4EB /* ImageFeed.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ImageFeed.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
@@ -42,6 +46,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				5C3DC6F32CAF2D670014C0ED /* ProgressHUD in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -110,6 +115,9 @@
 				Base,
 			);
 			mainGroup = 5C7187492C80B5150012F4EB;
+			packageReferences = (
+				5C3DC6F12CAF2D670014C0ED /* XCRemoteSwiftPackageReference "ProgressHUD" */,
+			);
 			preferredProjectObjectVersion = 56;
 			productRefGroup = 5C7187532C80B5150012F4EB /* Products */;
 			projectDirPath = "";
@@ -346,6 +354,25 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		5C3DC6F12CAF2D670014C0ED /* XCRemoteSwiftPackageReference "ProgressHUD" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/relatedcode/ProgressHUD.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 14.1.3;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		5C3DC6F22CAF2D670014C0ED /* ProgressHUD */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 5C3DC6F12CAF2D670014C0ED /* XCRemoteSwiftPackageReference "ProgressHUD" */;
+			productName = ProgressHUD;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 5C71874A2C80B5150012F4EB /* Project object */;
 }
