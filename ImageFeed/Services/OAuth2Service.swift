@@ -7,6 +7,10 @@
 
 import Foundation
 
+enum AuthServiceError: Error {
+    case invalidRequest
+}
+
 final class OAuth2Service {
     // MARK: - Constants
     
@@ -15,6 +19,11 @@ final class OAuth2Service {
     // MARK: - Private Properties
     
     private let decoder = SnakeCaseJSONDecoder()
+    
+    private let urlSession = URLSession.shared
+    
+    private var task: URLSessionTask?
+    private var lastCode: String?
     
     // MARK: - Initializers
     
@@ -48,9 +57,19 @@ final class OAuth2Service {
         code: String,
         handler: @escaping (Result<String, Error>) -> Void
     ) {
+        assert(Thread.isMainThread)
+        
+        guard lastCode != code else {
+            handler(.failure(AuthServiceError.invalidRequest))
+            return
+        }
+        
+        task?.cancel()
+        lastCode = code
+        
         let request = makeOAuthTokenRequest(code: code)
         
-        let task = URLSession.shared.data(for: request) { [weak self] result in
+        let task = urlSession.data(for: request) { [weak self] result in
             guard let self else { return }
             switch result {
             case .success(let data):
@@ -60,6 +79,8 @@ final class OAuth2Service {
                     OAuth2TokenStorage.shared.token = token
                     print("Записали токен")
                     handler(.success(token))
+                    self.task = nil
+                    self.lastCode = nil
                 }
                 catch {
                     print(error.localizedDescription)
@@ -70,6 +91,7 @@ final class OAuth2Service {
                 handler(.failure(error))
             }
         }
+        self.task = task
         task.resume()
     }
     
