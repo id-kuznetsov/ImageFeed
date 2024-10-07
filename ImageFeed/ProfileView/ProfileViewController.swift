@@ -12,6 +12,7 @@ final class ProfileViewController: UIViewController {
     // MARK: - Private properties
     
     private let profileService = ProfileService.shared
+    private var profileImageServiceObserver: NSObjectProtocol?
     
     private lazy var profileImageView: UIImageView = {
         let profileImage = UIImageView()
@@ -88,13 +89,23 @@ final class ProfileViewController: UIViewController {
     
     // MARK: - Initializers
     
-
+    
     // MARK: - lifecycle
     
     override func viewDidLoad() {
         super.viewDidLoad()
         setProfileView()
         
+        profileImageServiceObserver = NotificationCenter.default
+            .addObserver(
+                forName: ProfileImageService.didChangeNotification,
+                object: nil,
+                queue: .main
+            ) { [weak self] _ in
+                guard let self = self else { return }
+                self.updateAvatar()
+            }
+        updateAvatar()
         
     }
     
@@ -118,6 +129,13 @@ final class ProfileViewController: UIViewController {
         bioLabel.text = profile.bio
     }
     
+    private func updateAvatar() {
+        guard
+            let profileImageURL = ProfileImageService.shared.avatarURL,
+            let url = URL(string: profileImageURL)
+        else { return }
+        // TODO: [Sprint 11] Обновить аватар, используя Kingfisher
+    }
     private func setProfileView() {
         guard let profile = profileService.profile else {
             print("No profile data")
