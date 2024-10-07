@@ -15,9 +15,7 @@ final class ProfileService {
     // MARK: - Private Properties
     
     private let decoder = SnakeCaseJSONDecoder()
-    
     private let urlSession = URLSession.shared
-    
     private var task: URLSessionTask?
     private(set) var profile: Profile?
     
@@ -53,8 +51,7 @@ final class ProfileService {
             guard let self else { return }
             switch result {
             case .success(let data):
-                do { // TODO: искать ошибку тут
-                    
+                do {
                     let response = try self.decoder.decode(ProfileResult.self, from: data)
                     self.profile = Profile(
                         name: response.name ?? " ",
@@ -66,7 +63,7 @@ final class ProfileService {
                         return
                     }
                     completion(.success(profileData))
-                    print("\(profileData)")
+
                     self.task = nil
                 }
                 catch {

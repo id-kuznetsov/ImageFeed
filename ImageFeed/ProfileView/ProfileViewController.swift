@@ -86,13 +86,16 @@ final class ProfileViewController: UIViewController {
         return favouritesImageView
     }()
     
+    // MARK: - Initializers
+    
+
     // MARK: - lifecycle
     
     override func viewDidLoad() {
         super.viewDidLoad()
         setProfileView()
         
-
+        
     }
     
     // MARK: - actions
