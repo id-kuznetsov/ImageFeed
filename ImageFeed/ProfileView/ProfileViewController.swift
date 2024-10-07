@@ -11,6 +11,8 @@ final class ProfileViewController: UIViewController {
     
     // MARK: - Private properties
     
+    private let profileService = ProfileService.shared
+    
     private lazy var profileImageView: UIImageView = {
         let profileImage = UIImageView()
         profileImage.image = UIImage(named: "avatar")
@@ -40,7 +42,7 @@ final class ProfileViewController: UIViewController {
         return loginLabel
     }()
     
-    private lazy var statusLabel: UILabel = {
+    private lazy var bioLabel: UILabel = {
         let statusLabel = UILabel()
         statusLabel.text = "Hello, world!"
         statusLabel.textColor = .ypWhite
@@ -89,6 +91,8 @@ final class ProfileViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         setProfileView()
+        
+
     }
     
     // MARK: - actions
@@ -104,7 +108,20 @@ final class ProfileViewController: UIViewController {
         }
     }
     
+    // MARK: - Private Methods
+    private func updateProfileDetails(profile: Profile) {
+        nameLabel.text = profile.name
+        loginLabel.text = profile.loginName
+        bioLabel.text = profile.bio
+    }
+    
     private func setProfileView() {
+        guard let profile = profileService.profile else {
+            print("No profile data")
+            return
+        }
+        updateProfileDetails(profile: profile)
+        
         view.backgroundColor = .ypBlack
         addLabelsInProfileInfoStackView()
         addFavouritesPlaceHolder()
@@ -127,7 +144,7 @@ final class ProfileViewController: UIViewController {
     private func addLabelsInProfileInfoStackView() {
         profileInfoStackView.addArrangedSubview(nameLabel)
         profileInfoStackView.addArrangedSubview(loginLabel)
-        profileInfoStackView.addArrangedSubview(statusLabel)
+        profileInfoStackView.addArrangedSubview(bioLabel)
     }
     
     private func addFavouritesPlaceHolder() {
