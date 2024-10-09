@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import Kingfisher
 
 final class ProfileViewController: UIViewController {
     
@@ -13,10 +14,14 @@ final class ProfileViewController: UIViewController {
     
     private let profileService = ProfileService.shared
     private var profileImageServiceObserver: NSObjectProtocol?
+    private var imageCache = ImageCache.default
     
     private lazy var profileImageView: UIImageView = {
         let profileImage = UIImageView()
-        profileImage.image = UIImage(named: "avatar")
+        profileImage.backgroundColor = .ypBlack
+        profileImage.layer.masksToBounds = true
+        profileImage.image = UIImage(systemName: "person.crop.circle.fill")
+        profileImage.tintColor = .ypGrey
         return profileImage
     }()
     
@@ -130,12 +135,26 @@ final class ProfileViewController: UIViewController {
     }
     
     private func updateAvatar() {
+        imageCache.clearCache()
         guard
             let profileImageURL = ProfileImageService.shared.avatarURL,
             let url = URL(string: profileImageURL)
         else { return }
-        // TODO: [Sprint 11] Обновить аватар, используя Kingfisher
+        profileImageView.kf.indicatorType = .activity
+        let processor = RoundCornerImageProcessor(cornerRadius: 61)
+        profileImageView.kf.setImage(with: url,
+                                     placeholder: UIImage(systemName: "person.crop.circle.fill"),
+                                     options: [.processor(processor)]){ result in
+            switch result {
+            case .success(let value):
+                print("Image loaded from \(value.cacheType)")
+                print("Image source:\(value.source)")
+            case .failure(let error):
+                print("Failed updateAvatar with error: \(error.localizedDescription)")
+            }
+        }
     }
+    
     private func setProfileView() {
         guard let profile = profileService.profile else {
             print("No profile data")

@@ -94,7 +94,5 @@ extension AuthViewController: AlertPresenterDelegate {
     func showAlert(_ alert: UIAlertController) {
         present(alert, animated: true)
     }
-    
-    
 }
 
