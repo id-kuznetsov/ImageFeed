@@ -8,7 +8,7 @@
 import Foundation
 
 struct Profile {
-    let name, loginName, bio: String
+    let username, name, loginName, bio: String
 }
 
 struct ProfileResult: Decodable {

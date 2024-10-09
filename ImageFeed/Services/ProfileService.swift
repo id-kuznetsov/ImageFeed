@@ -47,31 +47,25 @@ final class ProfileService {
         
         let request = makeProfileRequest(token: token)
         
-        let task = urlSession.data(for: request) { [weak self] result in
+        let task = urlSession.objectTask(for: request) { [weak self] (result: Result<ProfileResult, Error>) in
             guard let self else { return }
             switch result {
-            case .success(let data):
-                do {
-                    let response = try self.decoder.decode(ProfileResult.self, from: data)
-                    self.profile = Profile(
-                        name: response.name ?? " ",
-                        loginName: "@" + response.username,
-                        bio: response.bio ?? " "
+            case .success(let profileResult):
+                self.profile = Profile(
+                    username: profileResult.username,
+                    name: profileResult.name ?? " ",
+                    loginName: "@" + profileResult.username,
+                    bio: profileResult.bio ?? " "
                     )
-                    guard let profileData = self.profile else {
-                        print("Unable to construct Profile")
-                        return
-                    }
-                    completion(.success(profileData))
-
-                    self.task = nil
+                guard let profileData = self.profile else {
+                    print("Unable to construct Profile")
+                    return
                 }
-                catch {
-                    print(error.localizedDescription)
-                    completion(.failure(error))
-                }
-            case .failure(let error):
-                print(error.localizedDescription)
+                completion(.success(profileData))
+                self.task = nil
+                
+            case .failure(let error): 
+                print("Error in \(#function) \(#file): \(error.localizedDescription)")
                 completion(.failure(error))
             }
         }

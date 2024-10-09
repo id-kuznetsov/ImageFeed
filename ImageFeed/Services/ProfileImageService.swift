@@ -50,40 +50,33 @@ final class ProfileImageService {
         
         let request = makeProfileImageRequest(username: username)
         
-        let task = urlSession.data(for: request) { [weak self] result in
+        
+        let task = urlSession.objectTask(for: request) { [weak self] (result: Result<UserResult, Error>) in
             guard let self else { return }
             switch result {
-            case .success(let data):
-                do {
-                    let response = try self.decoder.decode(UserResult.self, from: data)
-                    
-                    avatarURL = response.profileImage.small
-                    
-                    guard let profileImageURL = self.avatarURL else {
-                        print("Unable to get image")
-                        return
-                    }
-                    completion(.success(profileImageURL))
-                    
-                    NotificationCenter.default
-                        .post(
-                            name: ProfileImageService.didChangeNotification,
-                            object: self,
-                            userInfo: ["URL": profileImageURL]
-                        )
-                    
-                    self.task = nil
+            case .success(let profileImageData):
+                self.avatarURL = profileImageData.profileImage.small
+                
+                guard let profileImageURL = self.avatarURL else {
+                    print("Unable to get image")
+                    return
                 }
-                catch {
-                    print(error.localizedDescription)
-                    completion(.failure(error))
-                }
-            case .failure(let error):
-                print(error.localizedDescription)
+                completion(.success(profileImageURL))
+                
+                NotificationCenter.default
+                    .post(
+                        name: ProfileImageService.didChangeNotification,
+                        object: self,
+                        userInfo: ["URL": profileImageURL]
+                    )
+                
+                self.task = nil
+                
+            case .failure(let error): // TODO: здесь выбрасывается фэил, почему?
+                print("Error in \(#function) \(#file): \(error.localizedDescription)")
                 completion(.failure(error))
             }
         }
-        
         self.task = task
         task.resume()
     }

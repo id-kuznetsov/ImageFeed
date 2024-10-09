@@ -69,31 +69,26 @@ final class OAuth2Service {
         
         let request = makeOAuthTokenRequest(code: code)
         
-        let task = urlSession.data(for: request) { [weak self] result in
+        
+        let task = urlSession.objectTask(for: request) { [weak self] (result: Result<OAuthTokenResponseBody, Error>) in
             guard let self else { return }
             switch result {
             case .success(let data):
-                do {
-                    let response = try self.decoder.decode(OAuthTokenResponseBody.self, from: data)
-                    let token = response.accessToken
-                    OAuth2TokenStorage.shared.token = token
-                    print("Записали токен")
-                    handler(.success(token))
-                    self.task = nil
-                    self.lastCode = nil
-                }
-                catch {
-                    print(error.localizedDescription)
-                    handler(.failure(error))
-                }
+                let token = data.accessToken
+                OAuth2TokenStorage.shared.token = token
+                print("Записали токен \(token)")
+                handler(.success(token))
+                self.task = nil
+                self.lastCode = nil
             case .failure(let error):
-                print(error.localizedDescription)
+                print("Error in \(#function) \(#file): \(error.localizedDescription)")
                 handler(.failure(error))
             }
         }
         self.task = task
         task.resume()
     }
-    
 }
+
+
 
