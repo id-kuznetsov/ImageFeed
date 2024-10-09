@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		5C3DC6F32CAF2D670014C0ED /* ProgressHUD in Frameworks */ = {isa = PBXBuildFile; productRef = 5C3DC6F22CAF2D670014C0ED /* ProgressHUD */; };
 		5C3DC74C2CB69E4F0014C0ED /* Kingfisher in Frameworks */ = {isa = PBXBuildFile; productRef = 5C3DC74B2CB69E4F0014C0ED /* Kingfisher */; };
+		5C3DC74F2CB71B320014C0ED /* SwiftKeychainWrapper in Frameworks */ = {isa = PBXBuildFile; productRef = 5C3DC74E2CB71B320014C0ED /* SwiftKeychainWrapper */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -49,6 +50,7 @@
 			files = (
 				5C3DC74C2CB69E4F0014C0ED /* Kingfisher in Frameworks */,
 				5C3DC6F32CAF2D670014C0ED /* ProgressHUD in Frameworks */,
+				5C3DC74F2CB71B320014C0ED /* SwiftKeychainWrapper in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -120,6 +122,7 @@
 			packageReferences = (
 				5C3DC6F12CAF2D670014C0ED /* XCRemoteSwiftPackageReference "ProgressHUD" */,
 				5C3DC74A2CB69E4F0014C0ED /* XCRemoteSwiftPackageReference "Kingfisher" */,
+				5C3DC74D2CB71B320014C0ED /* XCRemoteSwiftPackageReference "SwiftKeychainWrapper" */,
 			);
 			preferredProjectObjectVersion = 56;
 			productRefGroup = 5C7187532C80B5150012F4EB /* Products */;
@@ -375,6 +378,14 @@
 				minimumVersion = 8.0.3;
 			};
 		};
+		5C3DC74D2CB71B320014C0ED /* XCRemoteSwiftPackageReference "SwiftKeychainWrapper" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/jrendel/SwiftKeychainWrapper";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 4.0.1;
+			};
+		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
@@ -387,6 +398,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 5C3DC74A2CB69E4F0014C0ED /* XCRemoteSwiftPackageReference "Kingfisher" */;
 			productName = Kingfisher;
+		};
+		5C3DC74E2CB71B320014C0ED /* SwiftKeychainWrapper */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 5C3DC74D2CB71B320014C0ED /* XCRemoteSwiftPackageReference "SwiftKeychainWrapper" */;
+			productName = SwiftKeychainWrapper;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

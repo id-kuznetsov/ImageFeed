@@ -26,17 +26,19 @@ final class ProfileImageService {
     private init() {}
     
     // MARK: - Public Methods
-    func makeProfileImageRequest(username: String) -> URLRequest {
+    func makeProfileImageRequest(username: String) -> URLRequest? {
         let profileImageGetURL = URL(string: "users/\(username)", relativeTo: Constants.defaultBaseURL)
         
         guard let url = profileImageGetURL else {
-            preconditionFailure("Unable to construct URL for profile image request")
+            print("Unable to construct URL for profile image request")
+            return nil
         }
         
         var request = URLRequest(url: url)
         
         guard let token = storage.token else {
-            preconditionFailure("Unable to get token")
+            print("Unable to get token")
+            return nil
         }
         
         request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
@@ -48,7 +50,10 @@ final class ProfileImageService {
         assert(Thread.isMainThread)
         task?.cancel()
         
-        let request = makeProfileImageRequest(username: username)
+        guard let request = makeProfileImageRequest(username: username) else {
+            print("Make request fail \(#file)")
+            return
+        }
         
         
         let task = urlSession.objectTask(for: request) { [weak self] (result: Result<UserResult, Error>) in

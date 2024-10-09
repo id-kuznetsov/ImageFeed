@@ -31,9 +31,10 @@ final class OAuth2Service {
     
     // MARK: - Public Methods
     
-    func makeOAuthTokenRequest(code: String) -> URLRequest {
+    func makeOAuthTokenRequest(code: String) -> URLRequest? {
         guard var urlComponents = URLComponents(string: Constants.unsplashGetTokenURLString) else {
-            preconditionFailure("Unsplash get token URL is wrong")
+            print("Unsplash get token URL is wrong")
+            return nil
         }
         urlComponents.queryItems = [
             URLQueryItem(name: "client_id", value: Constants.accessKey),
@@ -44,7 +45,8 @@ final class OAuth2Service {
         ]
         
         guard let url = urlComponents.url else {
-            preconditionFailure("Unable to construct URL for Request")
+            print("Unable to construct URL for Request")
+            return nil
         }
         
         var request = URLRequest(url: url)
@@ -67,7 +69,10 @@ final class OAuth2Service {
         task?.cancel()
         lastCode = code
         
-        let request = makeOAuthTokenRequest(code: code)
+        guard let request = makeOAuthTokenRequest(code: code) else {
+            print("Make request fail \(#file)")
+            return
+        }
         
         
         let task = urlSession.objectTask(for: request) { [weak self] (result: Result<OAuthTokenResponseBody, Error>) in

@@ -25,11 +25,12 @@ final class ProfileService {
     
     // MARK: - Public Methods
     
-    func makeProfileRequest(token: String) -> URLRequest {
+    func makeProfileRequest(token: String) -> URLRequest? {
         let profileGetURL = URL(string: "me", relativeTo: Constants.defaultBaseURL)
         
         guard let url = profileGetURL else {
-            preconditionFailure("Unable to construct URL for profile Request")
+            print("Unable to construct URL for profile Request")
+            return nil
         }
         
         var request = URLRequest(url: url)
@@ -45,7 +46,10 @@ final class ProfileService {
         assert(Thread.isMainThread)
         task?.cancel()
         
-        let request = makeProfileRequest(token: token)
+        guard let request = makeProfileRequest(token: token) else {
+            print("Make request fail \(#file)")
+            return
+        }
         
         let task = urlSession.objectTask(for: request) { [weak self] (result: Result<ProfileResult, Error>) in
             guard let self else { return }
