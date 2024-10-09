@@ -16,6 +16,8 @@ final class AuthViewController: UIViewController {
     
     private let showWebViewSegueIdentifier = "ShowWebView"
     private let oauth2Service = OAuth2Service.shared
+    private var alertModel: AlertModel?
+    private var alertPresenter: AlertPresenterProtocol?
     
     // MARK: - lifecycle
     
@@ -48,6 +50,16 @@ final class AuthViewController: UIViewController {
         )
         navigationItem.backBarButtonItem?.tintColor = .ypBlack
     }
+    
+    private func showAuthError() {
+        let alertModel = AlertModel(
+            title: "Что-то пошло не так(",
+            message: "Не удалось войти в систему",
+            buttonText: "OK",
+            completion: {}
+        )
+        alertPresenter?.showResultAlert(alertModel)
+    }
 }
 // MARK: - extension
 
@@ -64,7 +76,7 @@ extension AuthViewController: WebViewViewControllerDelegate {
                 self.delegate?.didAuthenticate(self)
             case .failure(let error):
                 print(error)
-                // TODO: обработать ошибку
+                showAuthError()
             }
         }
     }
@@ -74,4 +86,11 @@ extension AuthViewController: WebViewViewControllerDelegate {
     }
 }
 
+extension AuthViewController: AlertPresenterDelegate {
+    func showAlert(_ alert: UIAlertController) {
+        present(alert, animated: true)
+    }
+    
+    
+}
 

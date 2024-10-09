@@ -76,7 +76,6 @@ final class OAuth2Service {
             case .success(let data):
                 let token = data.accessToken
                 OAuth2TokenStorage.shared.token = token
-                print("Записали токен \(token)")
                 handler(.success(token))
                 self.task = nil
                 self.lastCode = nil
