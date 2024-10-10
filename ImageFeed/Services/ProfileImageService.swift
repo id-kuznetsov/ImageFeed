@@ -18,7 +18,7 @@ final class ProfileImageService {
     private let decoder = SnakeCaseJSONDecoder()
     private let urlSession = URLSession.shared
     private var task: URLSessionTask?
-    private(set) var avatarURL: String? // TODO: возможно поменять на URL? И тут, и в модели
+    private(set) var avatarURL: String?
     private let storage = OAuth2TokenStorage()
     
     // MARK: - Initializers
@@ -77,7 +77,7 @@ final class ProfileImageService {
                 
                 self.task = nil
                 
-            case .failure(let error): // TODO: здесь выбрасывается фэил, почему?
+            case .failure(let error):
                 print("Error in \(#function) \(#file): \(error.localizedDescription)")
                 completion(.failure(error))
             }

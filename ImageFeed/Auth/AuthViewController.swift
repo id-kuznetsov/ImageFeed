@@ -80,11 +80,7 @@ final class AuthViewController: UIViewController {
     }
     
     private func showWebView() {
-        let storyboard = UIStoryboard(name: "Main", bundle: .main)
-        guard let webViewViewController = storyboard.instantiateViewController(withIdentifier: "WebViewViewController") as? WebViewViewController else {
-            assertionFailure("Не удалось извлечь WebViewViewController")
-            return
-        }
+        let webViewViewController = WebViewViewController()
         webViewViewController.delegate = self
         webViewViewController.modalPresentationStyle = .fullScreen
         present(webViewViewController, animated: true)
@@ -99,6 +95,8 @@ final class AuthViewController: UIViewController {
         )
         alertPresenter?.showResultAlert(alertModel)
     }
+    
+    // MARK: - constraints
     
     private func authLogoImageViewConstraints() -> [NSLayoutConstraint] {
         [authLogoImageView.widthAnchor.constraint(equalToConstant: 60),

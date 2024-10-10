@@ -12,7 +12,7 @@ struct UserResult: Decodable {
 }
 
 struct ProfileImage: Decodable {
-    let small, medium, large: String // TODO: если small сразу сделать URL?
+    let small, medium, large: String
 }
 
 
