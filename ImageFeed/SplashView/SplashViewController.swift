@@ -47,9 +47,9 @@ final class SplashViewController: UIViewController {
         }
         
         if !didFetchProfile {
-                didFetchProfile = true
-                fetchProfile(token: token)
-            }
+            didFetchProfile = true
+            fetchProfile(token: token)
+        }
     }
     
     // MARK: - Private Methods
@@ -83,7 +83,7 @@ final class SplashViewController: UIViewController {
                 switchToTabBarController()
                 profileImageService.fetchProfileImageURL(username: profile.username ) { _ in }
             case .failure(let error):
-                print(error)
+                print("Error in \(#function) \(#file): \(error.localizedDescription)")
                 showError()
             }
             
@@ -91,21 +91,17 @@ final class SplashViewController: UIViewController {
     }
     
     private func showError() {
-           let alertModel = AlertModel(
-               title: "Что-то пошло не так(",
-               message: "Не удалось войти в систему",
-               buttonText: "OK",
-               completion: {}
-           )
-           alertPresenter?.showResultAlert(alertModel)
-       }
+        let alertModel = AlertModel(
+            title: "Что-то пошло не так(",
+            message: "Не удалось войти в систему",
+            buttonText: "OK",
+            completion: {}
+        )
+        alertPresenter?.showResultAlert(alertModel)
+    }
     
     private func showAuthViewController() {
-        let storyboard = UIStoryboard(name: "Main", bundle: .main)
-        guard let authViewController = storyboard.instantiateViewController(withIdentifier: "AuthViewController") as? AuthViewController else {
-            assertionFailure("Не удалось извлечь AuthViewController")
-            return
-        }
+        let authViewController = AuthViewController()
         authViewController.delegate = self
         authViewController.modalPresentationStyle = .fullScreen
         present(authViewController, animated: true)
@@ -125,11 +121,7 @@ extension SplashViewController: AuthViewControllerDelegate {
     func didAuthenticate(_ vc: AuthViewController) {
         vc.dismiss(animated: true)
         
-        guard let token = storage.token else {
-            return
-        }
-        
-        fetchProfile(token: token)
+        switchToTabBarController()
     }
 }
 
