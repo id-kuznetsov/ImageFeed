@@ -17,7 +17,12 @@ final class AuthViewController: UIViewController {
     private let showWebViewSegueIdentifier = "ShowWebView"
     private let oauth2Service = OAuth2Service.shared
     private var alertModel: AlertModel?
-    private var alertPresenter: AlertPresenterProtocol?
+    
+    private lazy var alertPresenter: AlertPresenterProtocol? = {
+        let presenter = AlertPresenter()
+        presenter.delegate = self
+        return presenter
+    }()
     
     // MARK: - lifecycle
     
@@ -25,9 +30,6 @@ final class AuthViewController: UIViewController {
         super.viewDidLoad()
         configureBackButton()
         
-        let alertPresenter = AlertPresenter()
-        alertPresenter.delegate = self
-        self.alertPresenter = alertPresenter
     }
     // MARK: - Public Methods
     
@@ -86,7 +88,7 @@ extension AuthViewController: WebViewViewControllerDelegate {
     }
     
     func webViewViewControllerDidCancel(_ vc: WebViewViewController) {
-        dismiss(animated: true)
+        vc.dismiss(animated: true)
     }
 }
 

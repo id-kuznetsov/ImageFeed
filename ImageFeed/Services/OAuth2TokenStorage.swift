@@ -34,4 +34,8 @@ final class OAuth2TokenStorage {
     private enum Keys: String {
         case token
     }
+    
+    func clearTokenStorage() {
+        storage.removeObject(forKey: Keys.token.rawValue)
+    }
 }

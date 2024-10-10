@@ -121,6 +121,10 @@ final class ProfileViewController: UIViewController {
         profileInfoStackView.isHidden = true
         profileImageView.image = UIImage(systemName: "person.crop.circle.fill")
         profileImageView.tintColor = .ypGrey
+        
+        OAuth2TokenStorage.shared.clearTokenStorage()
+
+        
         let allValues = UserDefaults.standard.dictionaryRepresentation()
         allValues.keys.forEach{ key in
             UserDefaults.standard.removeObject(forKey: key)
