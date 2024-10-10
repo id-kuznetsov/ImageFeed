@@ -14,7 +14,6 @@ final class SplashViewController: UIViewController {
     private let profileService = ProfileService.shared
     private let profileImageService = ProfileImageService.shared
     private let storage = OAuth2TokenStorage()
-    private var alertModel: AlertModel?
     private var didFetchProfile = false
     
     private lazy var alertPresenter: AlertPresenterProtocol? = {

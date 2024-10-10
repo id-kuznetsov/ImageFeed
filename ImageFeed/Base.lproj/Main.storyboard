@@ -245,7 +245,7 @@
                                     </userDefinedRuntimeAttribute>
                                 </userDefinedRuntimeAttributes>
                                 <connections>
-                                    <segue destination="Zne-EB-aHv" kind="show" identifier="ShowWebView" id="GYP-p7-OFO"/>
+                                    <segue destination="Zne-EB-aHv" kind="presentation" identifier="ShowWebView" modalPresentationStyle="fullScreen" id="GYP-p7-OFO"/>
                                 </connections>
                             </button>
                         </subviews>
@@ -274,7 +274,7 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <wkWebView contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="MBk-m4-QBB">
-                                <rect key="frame" x="0.0" y="103" width="393" height="749"/>
+                                <rect key="frame" x="0.0" y="0.0" width="393" height="852"/>
                                 <color key="backgroundColor" name="YP White"/>
                                 <wkWebViewConfiguration key="configuration">
                                     <audiovisualMediaTypes key="mediaTypesRequiringUserActionForPlayback" none="YES"/>
@@ -282,7 +282,7 @@
                                 </wkWebViewConfiguration>
                             </wkWebView>
                             <progressView opaque="NO" contentMode="scaleToFill" verticalHuggingPriority="750" progress="0.5" translatesAutoresizingMaskIntoConstraints="NO" id="8Is-hy-Axn">
-                                <rect key="frame" x="0.0" y="103" width="393" height="4"/>
+                                <rect key="frame" x="0.0" y="0.0" width="393" height="4"/>
                                 <color key="tintColor" name="YP Black"/>
                             </progressView>
                         </subviews>
@@ -307,25 +307,6 @@
                 <placeholder placeholderIdentifier="IBFirstResponder" id="eks-Eq-Dzn" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="356" y="-1594"/>
-        </scene>
-        <!--Navigation Controller-->
-        <scene sceneID="uBC-XG-SzO">
-            <objects>
-                <navigationController automaticallyAdjustsScrollViewInsets="NO" id="PUN-ij-ba6" sceneMemberID="viewController">
-                    <toolbarItems/>
-                    <navigationItem key="navigationItem" id="v8G-AG-ZLt"/>
-                    <navigationBar key="navigationBar" contentMode="scaleToFill" id="331-ns-ASg">
-                        <rect key="frame" x="0.0" y="59" width="393" height="44"/>
-                        <autoresizingMask key="autoresizingMask"/>
-                    </navigationBar>
-                    <nil name="viewControllers"/>
-                    <connections>
-                        <segue destination="FFP-Su-pdi" kind="relationship" relationship="rootViewController" id="BrM-50-gI2"/>
-                    </connections>
-                </navigationController>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="e0i-mR-jj6" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
-            </objects>
-            <point key="canvasLocation" x="-1434" y="-1594"/>
         </scene>
     </scenes>
     <resources>
