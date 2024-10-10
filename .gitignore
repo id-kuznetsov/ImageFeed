@@ -48,5 +48,10 @@ playground.xcworkspace
 /*.gcno
 **/xcshareddata/WorkspaceSettings.xcsettings
 
+### SwiftPackageManager ###
+Packages
+xcuserdata
+*.xcodeproj
+
 
 

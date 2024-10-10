@@ -6,14 +6,22 @@
 //
 
 import UIKit
+import Kingfisher
 
 final class ProfileViewController: UIViewController {
     
     // MARK: - Private properties
     
+    private let profileService = ProfileService.shared
+    private var profileImageServiceObserver: NSObjectProtocol?
+    private var imageCache = ImageCache.default
+    
     private lazy var profileImageView: UIImageView = {
         let profileImage = UIImageView()
-        profileImage.image = UIImage(named: "avatar")
+        profileImage.backgroundColor = .ypBlack
+        profileImage.layer.masksToBounds = true
+        profileImage.image = UIImage(systemName: "person.crop.circle.fill")
+        profileImage.tintColor = .ypGrey
         return profileImage
     }()
     
@@ -40,7 +48,7 @@ final class ProfileViewController: UIViewController {
         return loginLabel
     }()
     
-    private lazy var statusLabel: UILabel = {
+    private lazy var bioLabel: UILabel = {
         let statusLabel = UILabel()
         statusLabel.text = "Hello, world!"
         statusLabel.textColor = .ypWhite
@@ -84,11 +92,26 @@ final class ProfileViewController: UIViewController {
         return favouritesImageView
     }()
     
+    // MARK: - Initializers
+    
+    
     // MARK: - lifecycle
     
     override func viewDidLoad() {
         super.viewDidLoad()
         setProfileView()
+        
+        profileImageServiceObserver = NotificationCenter.default
+            .addObserver(
+                forName: ProfileImageService.didChangeNotification,
+                object: nil,
+                queue: .main
+            ) { [weak self] _ in
+                guard let self = self else { return }
+                self.updateAvatar()
+            }
+        updateAvatar()
+        
     }
     
     // MARK: - actions
@@ -98,13 +121,51 @@ final class ProfileViewController: UIViewController {
         profileInfoStackView.isHidden = true
         profileImageView.image = UIImage(systemName: "person.crop.circle.fill")
         profileImageView.tintColor = .ypGrey
+        
+        OAuth2TokenStorage.shared.clearTokenStorage()
+
+        
         let allValues = UserDefaults.standard.dictionaryRepresentation()
         allValues.keys.forEach{ key in
             UserDefaults.standard.removeObject(forKey: key)
         }
     }
     
+    // MARK: - Private Methods
+    private func updateProfileDetails(profile: Profile) {
+        nameLabel.text = profile.name
+        loginLabel.text = profile.loginName
+        bioLabel.text = profile.bio
+    }
+    
+    private func updateAvatar() {
+        imageCache.clearCache()
+        guard
+            let profileImageURL = ProfileImageService.shared.avatarURL,
+            let url = URL(string: profileImageURL)
+        else { return }
+        profileImageView.kf.indicatorType = .activity
+        let processor = RoundCornerImageProcessor(cornerRadius: 61)
+        profileImageView.kf.setImage(with: url,
+                                     placeholder: UIImage(systemName: "person.crop.circle.fill"),
+                                     options: [.processor(processor)]){ result in
+            switch result {
+            case .success(let value):
+                print("Image loaded from \(value.cacheType)")
+                print("Image source:\(value.source)")
+            case .failure(let error):
+                print("Failed updateAvatar with error: \(error.localizedDescription)")
+            }
+        }
+    }
+    
     private func setProfileView() {
+        guard let profile = profileService.profile else {
+            print("No profile data")
+            return
+        }
+        updateProfileDetails(profile: profile)
+        
         view.backgroundColor = .ypBlack
         addLabelsInProfileInfoStackView()
         addFavouritesPlaceHolder()
@@ -127,7 +188,7 @@ final class ProfileViewController: UIViewController {
     private func addLabelsInProfileInfoStackView() {
         profileInfoStackView.addArrangedSubview(nameLabel)
         profileInfoStackView.addArrangedSubview(loginLabel)
-        profileInfoStackView.addArrangedSubview(statusLabel)
+        profileInfoStackView.addArrangedSubview(bioLabel)
     }
     
     private func addFavouritesPlaceHolder() {
