@@ -17,7 +17,7 @@ final class ImagesListCell: UITableViewCell {
     @IBOutlet private var dateLabel: UILabel!
     @IBOutlet private var gradient: UIView!
     
-    // MARK: - Properties
+    // MARK: - Private properties
     
     private lazy var currentDate = Date()
     private lazy var dateFormatter: DateFormatter = {

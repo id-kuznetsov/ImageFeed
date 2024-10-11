@@ -27,7 +27,7 @@ final class WebViewViewController: UIViewController {
         let button = UIButton.systemButton(
             with: buttonImage,
             target: self,
-            action: #selector(self.didBackButtonTapped)
+            action: #selector(self.didTapBackButton)
         )
         button.tintColor = .ypBlack
         button.translatesAutoresizingMaskIntoConstraints = false
@@ -70,7 +70,7 @@ final class WebViewViewController: UIViewController {
     // MARK: - actions
     
     @objc
-    private func didBackButtonTapped() {
+    private func didTapBackButton() {
         delegate?.webViewViewControllerDidCancel(self)
     }
     

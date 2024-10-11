@@ -40,24 +40,19 @@ final class SplashViewController: UIViewController {
     
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
-        //        guard let token = storage.token,  else {
-        //            showAuthViewController()
-        //            return
-        //        }
         
-        //        if !didFetchProfile {
-        //            fetchProfile(token: token)
-        //        }
+        checkAuthorization()
+        
+    }
+    
+    // MARK: - Private Methods
+    private func checkAuthorization() {
         if let token = storage.token, !didFetchProfile {
             fetchProfile(token: token)
         } else {
             showAuthViewController()
-            
         }
     }
-    
-    // MARK: - Private Methods
-    
     private func setSplashView() {
         view.backgroundColor = .ypBlack
         view.addSubview(splashImageView)
@@ -76,7 +71,7 @@ final class SplashViewController: UIViewController {
     }
     
     private func fetchProfile(token: String) {
-        didFetchProfile = true
+
         UIBlockingProgressHUD.show()
         print("UIBlockingProgressHUD is shown \(#file) \(#line)")
         profileService.fetchProfile(token) { [weak self] result in
