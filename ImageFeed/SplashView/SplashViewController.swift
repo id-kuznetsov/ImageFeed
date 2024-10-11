@@ -40,15 +40,19 @@ final class SplashViewController: UIViewController {
     
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
+        //        guard let token = storage.token,  else {
+        //            showAuthViewController()
+        //            return
+        //        }
         
-        guard let token = storage.token else {
-            showAuthViewController()
-            return
-        }
-        
-        if !didFetchProfile {
-            didFetchProfile = true
+        //        if !didFetchProfile {
+        //            fetchProfile(token: token)
+        //        }
+        if let token = storage.token, !didFetchProfile {
             fetchProfile(token: token)
+        } else {
+            showAuthViewController()
+            
         }
     }
     
@@ -72,11 +76,14 @@ final class SplashViewController: UIViewController {
     }
     
     private func fetchProfile(token: String) {
+        didFetchProfile = true
         UIBlockingProgressHUD.show()
+        print("UIBlockingProgressHUD is shown \(#file) \(#line)")
         profileService.fetchProfile(token) { [weak self] result in
             guard let self else { return }
             
             UIBlockingProgressHUD.dismiss()
+            print("UIBlockingProgressHUD is dismissed \(#file) \(#line)")
             
             switch result {
             case .success(let profile):
@@ -119,6 +126,11 @@ final class SplashViewController: UIViewController {
 
 extension SplashViewController: AuthViewControllerDelegate {
     func didAuthenticate(_ vc: AuthViewController) {
+        guard let token = storage.token else {
+            return
+        }
+        fetchProfile(token: token)
+        didFetchProfile = true
         vc.dismiss(animated: true)
         
         switchToTabBarController()
