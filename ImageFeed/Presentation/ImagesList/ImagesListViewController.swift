@@ -1,5 +1,5 @@
 //
-//  ViewController.swift
+//  ImagesListViewController.swift
 //  ImageFeed
 //
 //  Created by Илья Кузнецов on 29.08.2024.
@@ -9,20 +9,43 @@ import UIKit
 
 final class ImagesListViewController: UIViewController {
     
-    // MARK: - IB Outlets
-    
-    @IBOutlet private var tableView: UITableView!
-    
-    // MARK: - Properties
+    // MARK: - Private properties
     
     private let photosName: [String] = Array(0..<20).map{ "\($0)" }
+    
+    private lazy var tableView: UITableView = {
+        let tableView = UITableView()
+        tableView.register(ImagesListCell.self, forCellReuseIdentifier: ImagesListCell.reuseIdentifier)
+        tableView.backgroundColor = .ypBlack
+        tableView.dataSource = self
+        tableView.delegate = self
+        tableView.translatesAutoresizingMaskIntoConstraints = false
+        tableView.separatorStyle = .none
+        return tableView
+    }()
     
     // MARK: - lifecycle
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        setTableView()
         
         tableView.contentInset = UIEdgeInsets(top: 12, left: 0, bottom: 12, right: 0)
+    }
+    
+    // MARK: - Private Methods
+    
+    private func setTableView() {
+        view.backgroundColor = .ypBlack
+        view.addSubview(tableView)
+        
+        NSLayoutConstraint.activate(
+            [tableView.topAnchor.constraint(equalTo: view.topAnchor),
+             tableView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
+             tableView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+             tableView.trailingAnchor.constraint(equalTo: view.trailingAnchor)
+            ]
+        )
     }
 }
 
@@ -46,9 +69,8 @@ extension ImagesListViewController: UITableViewDataSource {
         )
         
         guard let imageListCell = cell as? ImagesListCell else {
-            return UITableViewCell()
+            return ImagesListCell()
         }
-        
         configCell(for: imageListCell, with: indexPath)
         return imageListCell
     }
@@ -77,7 +99,6 @@ extension ImagesListViewController: UITableViewDelegate {
         let image = UIImage(named: photosName[indexPath.row])
         singleImage.image = image
         singleImage.modalPresentationStyle = .overFullScreen
-        singleImage.modalTransitionStyle = .crossDissolve
         present(singleImage, animated: true)
     }
 }

@@ -34,7 +34,6 @@ final class ProfileViewController: UIViewController {
     
     private lazy var nameLabel: UILabel = {
         let nameLabel = UILabel()
-        nameLabel.text = "Екатерина Новикова"
         nameLabel.textColor = .ypWhite
         nameLabel.font = .boldSystemFont(ofSize: 23)
         return nameLabel
@@ -42,7 +41,6 @@ final class ProfileViewController: UIViewController {
     
     private lazy var loginLabel: UILabel = {
         let loginLabel = UILabel()
-        loginLabel.text = "@ekaterina_nov"
         loginLabel.textColor = .ypGrey
         loginLabel.font = .systemFont(ofSize: 13)
         return loginLabel
@@ -50,7 +48,6 @@ final class ProfileViewController: UIViewController {
     
     private lazy var bioLabel: UILabel = {
         let statusLabel = UILabel()
-        statusLabel.text = "Hello, world!"
         statusLabel.textColor = .ypWhite
         statusLabel.font = .systemFont(ofSize: 13)
         return statusLabel

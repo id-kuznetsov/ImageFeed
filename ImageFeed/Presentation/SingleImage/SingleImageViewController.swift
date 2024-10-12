@@ -88,6 +88,7 @@ final class SingleImageViewController: UIViewController {
         imageView.image = image
         
         imageView.frame.size = image.size
+
         rescaleAndCenterImageInScrollView(image: image)
 
     }
@@ -113,6 +114,7 @@ final class SingleImageViewController: UIViewController {
     @objc
     private func didTapLikeButton() {
         likeButton.isEnabled = true
+        // TODO: Like button logic
     }
     
     // MARK: - private methods
@@ -170,8 +172,8 @@ final class SingleImageViewController: UIViewController {
         view.layoutIfNeeded()
         let visibleRectSize = scrollView.bounds.size
         let imageSize = image.size
-        let hScale = visibleRectSize.width / imageSize.width
-        let vScale = visibleRectSize.height / imageSize.height
+        let hScale =  imageSize.width / visibleRectSize.width
+        let vScale =  imageSize.height / visibleRectSize.height
         let scale = min(maxZoomScale, max(minZoomScale, min(hScale, vScale)))
         scrollView.setZoomScale(scale, animated: false)
         scrollView.layoutIfNeeded()
