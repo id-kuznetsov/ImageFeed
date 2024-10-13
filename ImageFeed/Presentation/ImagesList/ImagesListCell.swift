@@ -61,8 +61,8 @@ final class ImagesListCell: UITableViewCell {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         contentView.backgroundColor = .ypBlack
         backgroundColor = .clear
+        selectionStyle = .none
         setCellUI()
-        // TODO: появляется белое вью за ячейкой после выделения
     }
     
     override func prepareForReuse() {
