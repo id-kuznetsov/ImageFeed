@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import SwiftKeychainWrapper
 
 final class OAuth2TokenStorage {
     // MARK: - Constants
@@ -19,14 +20,22 @@ final class OAuth2TokenStorage {
             storage.string(forKey: Keys.token.rawValue)
         }
         set {
+            guard let newValue else {
+                print("Invalid format token")
+                return
+            }
             storage.set(newValue, forKey: Keys.token.rawValue)
         }
     }
     
     // MARK: - Private properties
     
-    private let storage = UserDefaults.standard
+    private let storage = KeychainWrapper.standard
     private enum Keys: String {
         case token
+    }
+    
+    func clearTokenStorage() {
+        storage.removeObject(forKey: Keys.token.rawValue)
     }
 }
