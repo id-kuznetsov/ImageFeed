@@ -70,9 +70,7 @@ final class ImagesListCell: UITableViewCell {
         tableImage.image = nil
     }
     
-    
-    
-    // MARK: - actions
+    // MARK: - Actions
     @objc
     private func didTapLikeButton() {
         // TODO: Like button logic
@@ -131,6 +129,8 @@ final class ImagesListCell: UITableViewCell {
         )
     }
     
+    // MARK: - Constraints
+ 
     private func tableImageConstraint() -> [NSLayoutConstraint] {[
         tableImage.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 4),
         tableImage.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 16),

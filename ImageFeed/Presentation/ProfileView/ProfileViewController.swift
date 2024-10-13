@@ -88,8 +88,8 @@ final class ProfileViewController: UIViewController {
         favouritesImageView.translatesAutoresizingMaskIntoConstraints = false
         return favouritesImageView
     }()
-
-    // MARK: - lifecycle
+    
+    // MARK: - Lifecycle
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -108,7 +108,7 @@ final class ProfileViewController: UIViewController {
         
     }
     
-    // MARK: - actions
+    // MARK: - Actions
     
     @objc
     private func didLogoutButtonTapped() {
@@ -117,7 +117,7 @@ final class ProfileViewController: UIViewController {
         profileImageView.tintColor = .ypGrey
         
         OAuth2TokenStorage.shared.clearTokenStorage()
-
+        
         
         let allValues = UserDefaults.standard.dictionaryRepresentation()
         allValues.keys.forEach{ key in
@@ -134,15 +134,17 @@ final class ProfileViewController: UIViewController {
     
     private func updateAvatar() {
         imageCache.clearCache()
-        guard
-            let profileImageURL = ProfileImageService.shared.avatarURL,
-            let url = URL(string: profileImageURL)
-        else { return }
+        guard let profileImageURL = ProfileImageService.shared.avatarURL,
+              let url = URL(string: profileImageURL)
+        else {
+            return
+        }
         profileImageView.kf.indicatorType = .activity
         let processor = RoundCornerImageProcessor(cornerRadius: 61)
         profileImageView.kf.setImage(with: url,
                                      placeholder: UIImage(systemName: "person.crop.circle.fill"),
-                                     options: [.processor(processor)]){ result in
+                                     options: [.processor(processor)]
+        ){ result in
             switch result {
             case .success(let value):
                 print("Image loaded from \(value.cacheType)")
@@ -190,7 +192,7 @@ final class ProfileViewController: UIViewController {
     }
     
     
-    // MARK: - constraints
+    // MARK: - Constraints
     
     private func profileImageViewConstraints() -> [NSLayoutConstraint] {
         [profileImageView.widthAnchor.constraint(equalToConstant: Constants.profileImageSize),
@@ -236,7 +238,7 @@ final class ProfileViewController: UIViewController {
     
 }
 
-// MARK: - extensions
+// MARK: - Extensions
 
 extension ProfileViewController {
     private enum Constants {

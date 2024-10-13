@@ -24,7 +24,7 @@ final class ImagesListViewController: UIViewController {
         return tableView
     }()
     
-    // MARK: - lifecycle
+    // MARK: - Lifecycle
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -49,7 +49,7 @@ final class ImagesListViewController: UIViewController {
     }
 }
 
-// MARK: - extensions
+// MARK: - Extensions
 
 extension ImagesListViewController {
     func configCell(for cell: ImagesListCell, with indexPath: IndexPath) {
@@ -69,6 +69,7 @@ extension ImagesListViewController: UITableViewDataSource {
         )
         
         guard let imageListCell = cell as? ImagesListCell else {
+            assertionFailure("Construct cell failed")
             return ImagesListCell()
         }
         configCell(for: imageListCell, with: indexPath)

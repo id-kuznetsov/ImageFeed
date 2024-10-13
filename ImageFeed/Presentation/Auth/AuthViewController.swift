@@ -9,6 +9,7 @@ import UIKit
 import ProgressHUD
 
 final class AuthViewController: UIViewController {
+    
     // MARK: - Public properties
     
     weak var delegate: AuthViewControllerDelegate?
@@ -45,7 +46,7 @@ final class AuthViewController: UIViewController {
         return button
     }()
     
-    // MARK: - lifecycle
+    // MARK: - Lifecycle
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -54,7 +55,7 @@ final class AuthViewController: UIViewController {
         
     }
     
-    // MARK: - actions
+    // MARK: - Actions
     
     @objc
     private func didEntryButtonTapped() {
@@ -96,7 +97,7 @@ final class AuthViewController: UIViewController {
         alertPresenter?.showResultAlert(alertModel)
     }
     
-    // MARK: - constraints
+    // MARK: - Constraints
     
     private func authLogoImageViewConstraints() -> [NSLayoutConstraint] {
         [authLogoImageView.widthAnchor.constraint(equalToConstant: 60),
@@ -114,7 +115,7 @@ final class AuthViewController: UIViewController {
         ]
     }
 }
-// MARK: - extension
+// MARK: - Extension
 
 extension AuthViewController: WebViewViewControllerDelegate {
     func webViewViewController(_ vc: WebViewViewController, didAuthenticateWithCode code: String) {

@@ -47,7 +47,7 @@ final class WebViewViewController: UIViewController {
         return webView
     }()
     
-    // MARK: - lifecycle
+    // MARK: - Lifecycle
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -67,7 +67,7 @@ final class WebViewViewController: UIViewController {
     }
     
     
-    // MARK: - actions
+    // MARK: - Actions
     
     @objc
     private func didTapBackButton() {
@@ -121,7 +121,7 @@ final class WebViewViewController: UIViewController {
         progressView.isHidden = fabs(webView.estimatedProgress - 1.0) <= 0.0001
     }
     
-    // MARK: - constraints
+    // MARK: - Constraints
     
     private func backButtonConstraints() -> [NSLayoutConstraint] {
         [backButton.leadingAnchor.constraint(equalTo:view.safeAreaLayoutGuide.leadingAnchor, constant: 9),
@@ -146,7 +146,7 @@ final class WebViewViewController: UIViewController {
         ]
     }
 }
-// MARK: - extension
+// MARK: - Extension
 
 extension WebViewViewController: WKNavigationDelegate {
     func webView(

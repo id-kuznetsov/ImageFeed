@@ -32,8 +32,7 @@ extension URLSession {
                     fulfillCompletionOnTheMainThread(.success(data))
                 } else {
                     print("HTTP Error with status code: \(statusCode), Response: \(String(data: data, encoding: .utf8) ?? "No data")")
-                    fulfillCompletionOnTheMainThread(.failure(NetworkError.httpStatusCode(statusCode))
-                    )
+                    fulfillCompletionOnTheMainThread(.failure(NetworkError.httpStatusCode(statusCode)))
                 }
             } else if let error = error {
                 print("URL Request Error: \(error.localizedDescription)")

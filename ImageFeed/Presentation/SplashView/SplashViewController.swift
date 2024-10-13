@@ -9,7 +9,7 @@ import UIKit
 
 final class SplashViewController: UIViewController {
     
-    // MARK: - Private Properties
+    // MARK: - Private properties
     
     private let profileService = ProfileService.shared
     private let profileImageService = ProfileImageService.shared
@@ -29,7 +29,7 @@ final class SplashViewController: UIViewController {
         return splashImage
     }()
     
-    // MARK: - lifecycle
+    // MARK: - Lifecycle
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -45,7 +45,7 @@ final class SplashViewController: UIViewController {
         
     }
     
-    // MARK: - Private Methods
+    // MARK: - Private methods
     private func checkAuthorization() {
         if let token = storage.token, !didFetchProfile {
             fetchProfile(token: token)
@@ -117,7 +117,7 @@ final class SplashViewController: UIViewController {
     
 }
 
-// MARK: - extension
+// MARK: - Extensions
 
 extension SplashViewController: AuthViewControllerDelegate {
     func didAuthenticate(_ vc: AuthViewController) {

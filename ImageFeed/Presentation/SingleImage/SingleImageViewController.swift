@@ -77,7 +77,7 @@ final class SingleImageViewController: UIViewController {
         return button
     }()
     
-    // MARK: - lifecycle
+    // MARK: - Lifecycle
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -93,7 +93,7 @@ final class SingleImageViewController: UIViewController {
 
     }
     
-    // MARK: - actions
+    // MARK: - Actions
     
     @objc
     private func didTapBackButton() {
@@ -117,7 +117,7 @@ final class SingleImageViewController: UIViewController {
         // TODO: Like button logic
     }
     
-    // MARK: - private methods
+    // MARK: - Private methods
     
     private func setSingleImageView() {
         view.backgroundColor = .ypBlack
@@ -135,6 +135,8 @@ final class SingleImageViewController: UIViewController {
         )
     }
     
+    // MARK: - Constraints
+ 
     private func backButtonConstraints() -> [NSLayoutConstraint] {
         [backButton.leadingAnchor.constraint(equalTo:view.safeAreaLayoutGuide.leadingAnchor, constant: 8),
          backButton.topAnchor.constraint(equalTo:view.safeAreaLayoutGuide.topAnchor, constant: 8),
