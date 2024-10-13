@@ -88,10 +88,7 @@ final class ProfileViewController: UIViewController {
         favouritesImageView.translatesAutoresizingMaskIntoConstraints = false
         return favouritesImageView
     }()
-    
-    // MARK: - Initializers
-    
-    
+
     // MARK: - lifecycle
     
     override func viewDidLoad() {

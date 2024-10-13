@@ -60,17 +60,16 @@ final class ImagesListCell: UITableViewCell {
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         contentView.backgroundColor = .ypBlack
-        prepareForReuse()
+        backgroundColor = .clear
         setCellUI()
-        // TODO: каждый раз заново добавляется градиент, здесь как-то проверять?
+        // TODO: появляется белое вью за ячейкой после выделения
     }
     
     override func prepareForReuse() {
         super.prepareForReuse()
-        backgroundColor = .clear
-        contentView.backgroundColor = .ypBlack
+        tableImage.image = nil
     }
-
+    
     
     
     // MARK: - actions
@@ -107,12 +106,15 @@ final class ImagesListCell: UITableViewCell {
             UIColor.ypBlack20.cgColor
         ]
         gradientLayer.frame = gradient.bounds
-        gradient.layer.addSublayer(gradientLayer)
+        if self.gradient.layer.sublayers?.count == nil  {
+            gradient.layer.addSublayer(gradientLayer)
+        }
     }
     
     // MARK: - Private Methods
     
     private func setCellUI() {
+        guard tableImage.superview == nil else { return }
         contentView.backgroundColor = .ypBlack
         contentView.clipsToBounds = true
         
@@ -158,9 +160,4 @@ final class ImagesListCell: UITableViewCell {
         gradient.heightAnchor.constraint(equalToConstant: 30)
     ]
     }
-    
-    
-    
-    
-    
 }

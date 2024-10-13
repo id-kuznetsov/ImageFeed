@@ -29,7 +29,7 @@ final class SplashViewController: UIViewController {
         return splashImage
     }()
     
-    // MARK: - lifycycle
+    // MARK: - lifecycle
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -65,20 +65,20 @@ final class SplashViewController: UIViewController {
             assertionFailure("Invalid window configuration")
             return
         }
-        let tabBarController = UIStoryboard(name: "Main", bundle: .main)
-            .instantiateViewController(withIdentifier: "TabBarViewController")
+
+        let tabBarController = TabBarController()
+        
         window.rootViewController = tabBarController
     }
     
     private func fetchProfile(token: String) {
 
         UIBlockingProgressHUD.show()
-        print("UIBlockingProgressHUD is shown \(#file) \(#line)")
+     
         profileService.fetchProfile(token) { [weak self] result in
             guard let self else { return }
             
             UIBlockingProgressHUD.dismiss()
-            print("UIBlockingProgressHUD is dismissed \(#file) \(#line)")
             
             switch result {
             case .success(let profile):
