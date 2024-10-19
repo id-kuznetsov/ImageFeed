@@ -12,6 +12,7 @@ enum AuthServiceError: Error {
 }
 
 final class OAuth2Service {
+    
     // MARK: - Constants
     
     static let shared = OAuth2Service()

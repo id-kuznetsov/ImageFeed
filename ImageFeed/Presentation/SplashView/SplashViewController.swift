@@ -46,6 +46,7 @@ final class SplashViewController: UIViewController {
     }
     
     // MARK: - Private methods
+    
     private func checkAuthorization() {
         if let token = storage.token, !didFetchProfile {
             fetchProfile(token: token)

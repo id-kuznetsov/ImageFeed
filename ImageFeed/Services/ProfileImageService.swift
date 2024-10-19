@@ -8,6 +8,7 @@
 import Foundation
 
 final class ProfileImageService {
+   
     // MARK: - Constants
     
     static let shared = ProfileImageService()

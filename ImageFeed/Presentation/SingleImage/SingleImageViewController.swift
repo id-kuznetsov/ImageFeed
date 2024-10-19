@@ -11,6 +11,7 @@ final class SingleImageViewController: UIViewController {
     
     // MARK: - Properties
     
+    var isImageLiked = false
     var image: UIImage? {
         didSet {
             guard isViewLoaded, let image else { return }
@@ -22,6 +23,7 @@ final class SingleImageViewController: UIViewController {
     }
     
     // MARK: - Private properties
+    
     private lazy var scrollView: UIScrollView = {
         let scrollView = UIScrollView()
         scrollView.indicatorStyle = .default
@@ -60,7 +62,7 @@ final class SingleImageViewController: UIViewController {
     }()
     
     private lazy var likeButton: UIButton = {
-        guard let buttonImage = UIImage(named: "Сircle") else { return UIButton() }
+        guard let buttonImage = UIImage(named: "SingleFavoritesNoActive") else { return UIButton() }
         let button = UIButton(type: .custom)
         button.setImage(buttonImage, for: .normal)
         button.addTarget(self, action: #selector(didTapLikeButton), for: .touchUpInside)
@@ -113,7 +115,19 @@ final class SingleImageViewController: UIViewController {
     
     @objc
     private func didTapLikeButton() {
-        likeButton.isEnabled = true
+            
+        
+        isImageLiked.toggle()
+        let isLiked = UIImage.singleFavoritesActive
+        let notLiked = UIImage.singleFavoritesNoActive
+        
+        if isImageLiked {
+            likeButton.setImage(isLiked, for: .normal)
+        } else {
+            likeButton.setImage(notLiked, for: .normal)
+        }
+        
+        
         // TODO: Like button logic
     }
     

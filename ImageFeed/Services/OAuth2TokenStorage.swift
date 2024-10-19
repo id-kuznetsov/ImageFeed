@@ -9,6 +9,7 @@ import Foundation
 import SwiftKeychainWrapper
 
 final class OAuth2TokenStorage {
+    
     // MARK: - Constants
     
     static let shared = OAuth2TokenStorage()

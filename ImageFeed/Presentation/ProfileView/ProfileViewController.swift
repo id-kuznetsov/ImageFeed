@@ -16,6 +16,8 @@ final class ProfileViewController: UIViewController {
     private var profileImageServiceObserver: NSObjectProtocol?
     private var imageCache = ImageCache.default
     
+    private var favouritesPhotoCount = 0 // TODO: кол-во понравившихся фото
+    
     private lazy var profileImageView: UIImageView = {
         let profileImage = UIImageView()
         profileImage.backgroundColor = .ypBlack
@@ -72,6 +74,25 @@ final class ProfileViewController: UIViewController {
         return favouritesLabel
     }()
     
+    private lazy var favouritesCountLabel: UILabel = {
+        let favouritesLabel = UILabel()
+        favouritesLabel.text = "\(favouritesPhotoCount)"
+        favouritesLabel.textColor = .ypWhite
+        favouritesLabel.font = .systemFont(ofSize: 13)
+        favouritesLabel.textAlignment = .center
+        favouritesLabel.translatesAutoresizingMaskIntoConstraints = false
+        return favouritesLabel
+    }()
+    
+    private lazy var favouritesBackgroundView: UIView = {
+        let favouritesBackgroundView = UIView()
+        favouritesBackgroundView.backgroundColor = .ypBlue
+        favouritesBackgroundView.layer.cornerRadius = 11
+        favouritesBackgroundView.layer.masksToBounds = true
+        favouritesBackgroundView.layoutMargins = UIEdgeInsets(top: 0, left: 12, bottom: 0, right: 12)
+        return favouritesBackgroundView
+    }()
+    
     private lazy var emptyFavouritesStackView: UIStackView = {
         let stackView = UIStackView()
         stackView.axis = .vertical
@@ -126,6 +147,7 @@ final class ProfileViewController: UIViewController {
     }
     
     // MARK: - Private Methods
+    
     private func updateProfileDetails(profile: Profile) {
         nameLabel.text = profile.name
         loginLabel.text = profile.loginName
@@ -164,9 +186,10 @@ final class ProfileViewController: UIViewController {
         
         view.backgroundColor = .ypBlack
         addLabelsInProfileInfoStackView()
+        favouritesBackgroundView.addSubview(favouritesCountLabel)
         addFavouritesPlaceHolder()
         
-        [profileImageView, exitButton, profileInfoStackView, favouritesLabel, emptyFavouritesStackView].forEach{
+        [profileImageView, exitButton, profileInfoStackView, favouritesLabel, favouritesBackgroundView, emptyFavouritesStackView].forEach{
             $0.translatesAutoresizingMaskIntoConstraints = false
             view.addSubview($0)
         }
@@ -176,9 +199,15 @@ final class ProfileViewController: UIViewController {
             exitButtonViewConstraints() +
             profileStackViewConstraints() +
             favouritesLabelViewConstraints() +
+            favouritesCountLabelViewConstraints() +
+            favouritesBackgroundViewConstraints() +
             emptyFavouritesStackViewConstraints() +
             emptyFavouritesImageViewConstraints()
         )
+        
+        if favouritesPhotoCount == 0 {
+            favouritesBackgroundView.isHidden = true
+        }
     }
     
     private func addLabelsInProfileInfoStackView() {
@@ -218,7 +247,22 @@ final class ProfileViewController: UIViewController {
     private func favouritesLabelViewConstraints() -> [NSLayoutConstraint] {
         [favouritesLabel.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: Constants.leadingSize),
          favouritesLabel.topAnchor.constraint(equalTo: profileImageView.bottomAnchor, constant: 100),
-         favouritesLabel.heightAnchor.constraint(equalToConstant: 23)
+         favouritesLabel.heightAnchor.constraint(equalToConstant: 22)
+        ]
+    }
+    
+    private func favouritesCountLabelViewConstraints() -> [NSLayoutConstraint] {
+        [favouritesCountLabel.leadingAnchor.constraint(equalTo: favouritesBackgroundView.layoutMarginsGuide.leadingAnchor),
+        favouritesCountLabel.trailingAnchor.constraint(equalTo: favouritesBackgroundView.layoutMarginsGuide.trailingAnchor),
+        favouritesCountLabel.topAnchor.constraint(equalTo: favouritesBackgroundView.layoutMarginsGuide.topAnchor),
+        favouritesCountLabel.bottomAnchor.constraint(equalTo: favouritesBackgroundView.layoutMarginsGuide.bottomAnchor)
+        ]
+    }
+    
+    private func favouritesBackgroundViewConstraints() -> [NSLayoutConstraint] {
+        [favouritesBackgroundView.leadingAnchor.constraint(equalTo: favouritesLabel.trailingAnchor, constant: 8),
+         favouritesBackgroundView.centerYAnchor.constraint(equalTo: favouritesLabel.centerYAnchor),
+         favouritesBackgroundView.heightAnchor.constraint(equalToConstant: 22)
         ]
     }
     

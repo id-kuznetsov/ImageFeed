@@ -8,6 +8,7 @@
 import UIKit
 
 final class ImagesListCell: UITableViewCell {
+    
     // MARK: - Constants
     
     static let reuseIdentifier = "ImagesListCell"
@@ -68,6 +69,11 @@ final class ImagesListCell: UITableViewCell {
     override func prepareForReuse() {
         super.prepareForReuse()
         tableImage.image = nil
+    }
+    
+    override func layoutSubviews() {
+        super.layoutSubviews()
+        gradient.layer.sublayers?.forEach { $0.frame = gradient.bounds }
     }
     
     // MARK: - Actions
