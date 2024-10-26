@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import Kingfisher
 
 final class ImagesListCell: UITableViewCell {
     
@@ -15,6 +16,7 @@ final class ImagesListCell: UITableViewCell {
     
     // MARK: - Private properties
     
+    private let imagesListService = ImagesListService.shared
     private lazy var currentDate = Date()
     private lazy var dateFormatter: DateFormatter = {
         let formatter = DateFormatter()
@@ -31,6 +33,14 @@ final class ImagesListCell: UITableViewCell {
         image.layer.masksToBounds = true
         return image
     }()
+    
+//    private lazy var placeholder: UIView = { // TODO: сделать вью для плэйсхолдера (размер, цвет)
+//        let image = UIImageView()
+//        image.image = UIImage(systemName: "scribble.variable")
+//        image.layer.cornerRadius = 16
+//        image.layer.masksToBounds = true
+//        return image
+//    }()
     
     private lazy var likeButton: UIButton = {
         guard let buttonImage = UIImage(named: "FavoritesNoActive") else { return UIButton() }
@@ -68,7 +78,11 @@ final class ImagesListCell: UITableViewCell {
     
     override func prepareForReuse() {
         super.prepareForReuse()
+        tableImage.kf.cancelDownloadTask()
+        
         tableImage.image = nil
+        dateLabel.text = nil
+        likeButton.imageView?.image = nil
     }
     
     override func layoutSubviews() {
@@ -85,16 +99,34 @@ final class ImagesListCell: UITableViewCell {
     // MARK: - Public Methods
     
     func configCell(cell:ImagesListCell, indexPath: IndexPath) {
-        guard let image = UIImage(named: "\(indexPath.row)") else { return }
+        guard let thumbImageURL = imagesListService.photos[indexPath.row].thumbImageURL else { return }
         
-        tableImage.image = image
+        tableImage.kf.indicatorType = .activity
         
-        dateLabel.text = dateFormatter.string(from: currentDate)
+        tableImage.kf.setImage(with: thumbImageURL,
+                               placeholder: UIImage(named: "placeholder")
+        ){ [weak self] result in
+            guard let self else { return }
+            switch result {
+            case .success(let value):
+                contentMode = .scaleAspectFill
+                self.tableImage.image = value.image
+                
+//                print("Image loaded from \(value.cacheType)")
+//                print("Image source:\(value.source)")
+            case .failure(let error):
+                print("Failed updateAvatar with error: \(error.localizedDescription)")
+            }
+        }
+        
+        let imageDate = imagesListService.photos[indexPath.row].createdAt
+        
+        dateLabel.text = dateFormatter.string(from: imageDate)
         
         let isLiked = UIImage.favoritesActive
         let notLiked = UIImage.favoritesNoActive
         
-        likeButton.imageView?.image = indexPath.row % 2 == 0 ? isLiked : notLiked
+        likeButton.imageView?.image = imagesListService.photos[indexPath.row].isLiked ? isLiked : notLiked
         
         setGradient()
     }
@@ -136,7 +168,7 @@ final class ImagesListCell: UITableViewCell {
     }
     
     // MARK: - Constraints
- 
+    
     private func tableImageConstraint() -> [NSLayoutConstraint] {[
         tableImage.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 4),
         tableImage.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 16),

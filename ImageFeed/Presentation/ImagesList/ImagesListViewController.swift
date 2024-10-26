@@ -6,11 +6,13 @@
 //
 
 import UIKit
+import Kingfisher
 
 final class ImagesListViewController: UIViewController {
     
     // MARK: - Private properties
-    
+    private let imagesListService = ImagesListService.shared
+    private var photos: [Photo] = []
     private let photosName: [String] = Array(0..<20).map{ "\($0)" }
     
     private lazy var tableView: UITableView = {
@@ -20,6 +22,7 @@ final class ImagesListViewController: UIViewController {
         tableView.dataSource = self
         tableView.delegate = self
         tableView.translatesAutoresizingMaskIntoConstraints = false
+        tableView.estimatedRowHeight = 100
         tableView.separatorStyle = .none
         return tableView
     }()
@@ -30,10 +33,33 @@ final class ImagesListViewController: UIViewController {
         super.viewDidLoad()
         setTableView()
         
+        NotificationCenter.default.addObserver(
+            forName: ImagesListService.didChangeNotification,
+            object: nil,
+            queue: .main
+        ) { [weak self] _ in
+            self?.updateTableViewAnimated()
+        }
+        
+        imagesListService.fetchPhotosNextPage()
         tableView.contentInset = UIEdgeInsets(top: 12, left: 0, bottom: 12, right: 0)
     }
     
     // MARK: - Private Methods
+    
+    private func updateTableViewAnimated() {
+        let oldCount = photos.count
+        let newCount = imagesListService.photos.count
+        photos = imagesListService.photos
+        if oldCount != newCount {
+            tableView.performBatchUpdates {
+                let indexPaths = (oldCount..<newCount).map { i in
+                    IndexPath(row: i, section: 0)
+                }
+                tableView.insertRows(at: indexPaths, with: .automatic)
+            } completion: { _ in }
+        }
+    }
     
     private func setTableView() {
         view.backgroundColor = .ypBlack
@@ -59,14 +85,13 @@ extension ImagesListViewController {
 
 extension ImagesListViewController: UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        photosName.count
+        photos.count
     }
     
     func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
-
-        // if indexPath.row + 1 == photos.count {
-        // TODO: fetchPhotos...
-        //}
+         if indexPath.row + 1 == photos.count {
+             imagesListService.fetchPhotosNextPage()
+        }
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {

@@ -10,21 +10,19 @@ import Foundation
 struct Photo {
     let id: String
     let size: CGSize
-    let createdAt: Date?
+    let createdAt: Date
     let welcomeDescription: String?
-    let thumbImageURL: String
-    let largeImageURL: String
+    let thumbImageURL: URL?
+    let largeImageURL: URL?
     let isLiked: Bool
 }
 
 struct PhotoResult: Decodable {
     let id: String
-    let createdAt, updatedAt: Date
+    let createdAt: String?
     let width, height: Int
-    let color, blurHash: String
-    let likes: Int
     let likedByUser: Bool
-    let description: String
+    let description: String?
     let urls: Urls
 }
 
