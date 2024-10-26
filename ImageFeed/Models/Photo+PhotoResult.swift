@@ -17,6 +17,10 @@ struct Photo {
     let isLiked: Bool
 }
 
+struct LikeResult: Decodable {
+    let photo: PhotoResult
+}
+
 struct PhotoResult: Decodable {
     let id: String
     let createdAt: String?

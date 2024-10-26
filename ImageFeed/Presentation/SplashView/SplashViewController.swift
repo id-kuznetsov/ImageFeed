@@ -100,7 +100,7 @@ final class SplashViewController: UIViewController {
             buttonText: "OK",
             completion: {}
         )
-        alertPresenter?.showResultAlert(alertModel)
+        alertPresenter?.showAlert(alertModel)
     }
     
     private func showAuthViewController() {

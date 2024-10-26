@@ -94,7 +94,7 @@ final class AuthViewController: UIViewController {
             buttonText: "OK",
             completion: {}
         )
-        alertPresenter?.showResultAlert(alertModel)
+        alertPresenter?.showAlert(alertModel)
     }
     
     // MARK: - Constraints

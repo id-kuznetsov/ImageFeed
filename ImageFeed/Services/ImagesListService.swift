@@ -141,7 +141,7 @@ final class ImagesListService {
             return
         }
         
-        let likeTask = urlSession.objectTask(for: request) { [weak self] (result: Result<PhotoResult, Error>) in
+        let likeTask = urlSession.objectTask(for: request) { [weak self] (result: Result<LikeResult, Error>) in
             guard let self else { return }
             switch result {
             case .success( _):

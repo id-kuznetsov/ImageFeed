@@ -14,6 +14,10 @@ final class ImagesListCell: UITableViewCell {
     
     static let reuseIdentifier = "ImagesListCell"
     
+    // MARK: - Properties
+    
+    weak var delegate: ImagesListCellDelegate?
+    
     // MARK: - Private properties
     
     private let imagesListService = ImagesListService.shared
@@ -33,14 +37,6 @@ final class ImagesListCell: UITableViewCell {
         image.layer.masksToBounds = true
         return image
     }()
-    
-//    private lazy var placeholder: UIView = { // TODO: сделать вью для плэйсхолдера (размер, цвет)
-//        let image = UIImageView()
-//        image.image = UIImage(systemName: "scribble.variable")
-//        image.layer.cornerRadius = 16
-//        image.layer.masksToBounds = true
-//        return image
-//    }()
     
     private lazy var likeButton: UIButton = {
         guard let buttonImage = UIImage(named: "FavoritesNoActive") else { return UIButton() }
@@ -93,7 +89,7 @@ final class ImagesListCell: UITableViewCell {
     // MARK: - Actions
     @objc
     private func didTapLikeButton() {
-        // TODO: Like button logic
+        delegate?.imageListCellDidTapLike(self)
     }
     
     // MARK: - Public Methods
@@ -111,11 +107,8 @@ final class ImagesListCell: UITableViewCell {
             case .success(let value):
                 contentMode = .scaleAspectFill
                 self.tableImage.image = value.image
-                
-//                print("Image loaded from \(value.cacheType)")
-//                print("Image source:\(value.source)")
             case .failure(let error):
-                print("Failed updateAvatar with error: \(error.localizedDescription)")
+                print("Failed updatePhoto in list with error: \(error.localizedDescription)")
             }
         }
         
@@ -123,10 +116,7 @@ final class ImagesListCell: UITableViewCell {
         
         dateLabel.text = dateFormatter.string(from: imageDate)
         
-        let isLiked = UIImage.favoritesActive
-        let notLiked = UIImage.favoritesNoActive
-        
-        likeButton.imageView?.image = imagesListService.photos[indexPath.row].isLiked ? isLiked : notLiked
+        setIsLiked(imagesListService.photos[indexPath.row].isLiked)
         
         setGradient()
     }
@@ -145,6 +135,13 @@ final class ImagesListCell: UITableViewCell {
         if self.gradient.layer.sublayers?.count == nil  {
             gradient.layer.addSublayer(gradientLayer)
         }
+    }
+    
+    func setIsLiked(_ isLiked: Bool) {
+        let isLikedImage = UIImage.favoritesActive
+        let notLikedImage = UIImage.favoritesNoActive
+        
+        likeButton.imageView?.image = isLiked ? isLikedImage : notLikedImage
     }
     
     // MARK: - Private Methods

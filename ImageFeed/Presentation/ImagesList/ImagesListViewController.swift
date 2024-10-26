@@ -10,7 +10,12 @@ import Kingfisher
 
 final class ImagesListViewController: UIViewController {
     
+    // MARK: - Public properties
+    
+    weak var delegate: AuthViewControllerDelegate?
+    
     // MARK: - Private properties
+    
     private let imagesListService = ImagesListService.shared
     private var photos: [Photo] = []
     private let photosName: [String] = Array(0..<20).map{ "\($0)" }
@@ -25,6 +30,12 @@ final class ImagesListViewController: UIViewController {
         tableView.estimatedRowHeight = 100
         tableView.separatorStyle = .none
         return tableView
+    }()
+    
+    private lazy var alertPresenter: AlertPresenterProtocol? = {
+        let presenter = AlertPresenter()
+        presenter.delegate = self
+        return presenter
     }()
     
     // MARK: - Lifecycle
@@ -73,6 +84,16 @@ final class ImagesListViewController: UIViewController {
             ]
         )
     }
+    
+    private func showLikeError() {
+        let alertModel = AlertModel(
+            title: "Что-то пошло не так(",
+            message: "Не удалось изменить лайк",
+            buttonText: "OK",
+            completion: {}
+        )
+        alertPresenter?.showAlert(alertModel)
+    }
 }
 
 // MARK: - Extensions
@@ -89,8 +110,8 @@ extension ImagesListViewController: UITableViewDataSource {
     }
     
     func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
-         if indexPath.row + 1 == photos.count {
-             imagesListService.fetchPhotosNextPage()
+        if indexPath.row + 1 == photos.count {
+            imagesListService.fetchPhotosNextPage()
         }
     }
     
@@ -104,6 +125,9 @@ extension ImagesListViewController: UITableViewDataSource {
             assertionFailure("Construct cell failed")
             return ImagesListCell()
         }
+        
+        imageListCell.delegate = self
+        
         configCell(for: imageListCell, with: indexPath)
         return imageListCell
     }
@@ -129,10 +153,33 @@ extension ImagesListViewController: UITableViewDelegate {
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         let singleImage = SingleImageViewController()
+        
+        //TODO: настроить картинку large
+        
         let image = UIImage(named: photosName[indexPath.row])
         singleImage.image = image
         singleImage.modalPresentationStyle = .overFullScreen
         present(singleImage, animated: true)
+    }
+}
+
+extension ImagesListViewController: ImagesListCellDelegate {
+    func imageListCellDidTapLike(_ cell: ImagesListCell) {
+        guard let indexPath = tableView.indexPath(for: cell) else { return }
+        let photo = photos[indexPath.row]
+        UIBlockingProgressHUD.show()
+        imagesListService.changeLike(photoId: photo.id, isLike: !photo.isLiked) { [weak self] result in
+            guard let self else { return }
+            switch result {
+            case .success:
+                self.photos = self.imagesListService.photos
+                cell.setIsLiked(self.photos[indexPath.row].isLiked)
+                UIBlockingProgressHUD.dismiss()
+            case .failure:
+                UIBlockingProgressHUD.dismiss()
+                showLikeError()
+            }
+        }
     }
 }
 
@@ -142,5 +189,11 @@ extension ImagesListViewController {
         static let imageBottomConstraint: CGFloat = 4
         static let leadingSize: CGFloat = 16
         static let trailingSize: CGFloat = 16
+    }
+}
+
+extension ImagesListViewController: AlertPresenterDelegate {
+    func showAlert(_ alert: UIAlertController) {
+        present(alert, animated: true)
     }
 }
