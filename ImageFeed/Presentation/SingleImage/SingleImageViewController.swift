@@ -9,9 +9,12 @@ import UIKit
 
 final class SingleImageViewController: UIViewController {
     
-    // MARK: - Properties
+    // MARK: - Public properties
     
     var isImageLiked = false
+    
+    weak var delegate: AuthViewControllerDelegate?
+    
     var image: UIImage? {
         didSet {
             guard isViewLoaded, let image else { return }
@@ -79,6 +82,12 @@ final class SingleImageViewController: UIViewController {
         return button
     }()
     
+    private lazy var alertPresenter: AlertPresenterProtocol? = {
+        let presenter = AlertPresenter()
+        presenter.delegate = self
+        return presenter
+    }()
+    
     // MARK: - Lifecycle
     
     override func viewDidLoad() {
@@ -131,6 +140,24 @@ final class SingleImageViewController: UIViewController {
         // TODO: Like button logic
     }
     
+    // MARK: - Public Methods
+    
+    func setImageFromURL(_ fullImageURL: URL) {
+        UIBlockingProgressHUD.show()
+        imageView.kf.setImage(with: fullImageURL) { [weak self] result in
+            UIBlockingProgressHUD.dismiss()
+            
+            guard let self = self else { return }
+            switch result {
+            case .success(let imageResult):
+                self.rescaleAndCenterImageInScrollView(image: imageResult.image)
+            case .failure:
+                print("Failed set photo in single image view")
+                self.showError(fullImageURL)
+            }
+        }
+    }
+    
     // MARK: - Private methods
     
     private func setSingleImageView() {
@@ -147,6 +174,22 @@ final class SingleImageViewController: UIViewController {
             shareButtonConstraints() +
             scrollViewConstraints()
         )
+    }
+    
+    private func showError(_ fullImageURL: URL) {
+        let alertModel = AlertModel(
+            title: "Что-то пошло не так",
+            message: "Попробовать ещё раз?",
+            buttonText: "Не надо",
+            cancelButtonText: "Повторить",
+            completion: {
+                self.dismiss(animated: true)
+            },
+            cancelCompletion: {
+                self.setImageFromURL(fullImageURL)
+            }
+        )
+        alertPresenter?.showAlert(alertModel)
     }
     
     // MARK: - Constraints
@@ -217,6 +260,8 @@ final class SingleImageViewController: UIViewController {
 
 // MARK: - extensions
 
+// MARK: UIScrollViewDelegate
+
 extension SingleImageViewController: UIScrollViewDelegate {
     func viewForZooming(in scrollView: UIScrollView) -> UIView? {
         imageView
@@ -226,3 +271,12 @@ extension SingleImageViewController: UIScrollViewDelegate {
         centerImage()
     }
 }
+
+// MARK: AlertPresenterDelegate
+
+extension SingleImageViewController: AlertPresenterDelegate {
+    func showAlert(_ alert: UIAlertController) {
+        present(alert, animated: true)
+    }
+}
+

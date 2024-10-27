@@ -108,7 +108,7 @@ final class ImagesListCell: UITableViewCell {
                 contentMode = .scaleAspectFill
                 self.tableImage.image = value.image
             case .failure(let error):
-                print("Failed updatePhoto in list with error: \(error.localizedDescription)")
+                print("Failed set photo in list with error: \(error.localizedDescription)")
             }
         }
         

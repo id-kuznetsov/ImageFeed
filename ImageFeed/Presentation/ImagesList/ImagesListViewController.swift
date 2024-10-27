@@ -18,8 +18,7 @@ final class ImagesListViewController: UIViewController {
     
     private let imagesListService = ImagesListService.shared
     private var photos: [Photo] = []
-    private let photosName: [String] = Array(0..<20).map{ "\($0)" }
-    
+
     private lazy var tableView: UITableView = {
         let tableView = UITableView()
         tableView.register(ImagesListCell.self, forCellReuseIdentifier: ImagesListCell.reuseIdentifier)
@@ -135,7 +134,7 @@ extension ImagesListViewController: UITableViewDataSource {
 
 extension ImagesListViewController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        guard let image = UIImage(named: "\(indexPath.row)") else { return 0 }
+        let image = photos[indexPath.row]
         
         let insets = UIEdgeInsets(
             top: Constants.imageTopConstraint,
@@ -153,11 +152,8 @@ extension ImagesListViewController: UITableViewDelegate {
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         let singleImage = SingleImageViewController()
-        
-        //TODO: настроить картинку large
-        
-        let image = UIImage(named: photosName[indexPath.row])
-        singleImage.image = image
+        guard let largeImageURL = photos[indexPath.row].largeImageURL else { return }
+        singleImage.setImageFromURL(largeImageURL)
         singleImage.modalPresentationStyle = .overFullScreen
         present(singleImage, animated: true)
     }
@@ -191,6 +187,8 @@ extension ImagesListViewController {
         static let trailingSize: CGFloat = 16
     }
 }
+
+// MARK: AlertPresenterDelegate
 
 extension ImagesListViewController: AlertPresenterDelegate {
     func showAlert(_ alert: UIAlertController) {
