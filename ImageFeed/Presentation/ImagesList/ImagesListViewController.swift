@@ -10,10 +10,6 @@ import Kingfisher
 
 final class ImagesListViewController: UIViewController {
     
-    // MARK: - Public properties
-    
-    weak var delegate: AuthViewControllerDelegate?
-    
     // MARK: - Private properties
     
     private let imagesListService = ImagesListService.shared

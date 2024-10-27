@@ -13,8 +13,6 @@ final class SingleImageViewController: UIViewController {
     
     var isImageLiked = false
     
-    weak var delegate: AuthViewControllerDelegate?
-    
     var image: UIImage? {
         didSet {
             guard isViewLoaded, let image else { return }
@@ -124,8 +122,6 @@ final class SingleImageViewController: UIViewController {
     
     @objc
     private func didTapLikeButton() {
-            
-        
         isImageLiked.toggle()
         let isLiked = UIImage.singleFavoritesActive
         let notLiked = UIImage.singleFavoritesNoActive
@@ -182,11 +178,11 @@ final class SingleImageViewController: UIViewController {
             message: "Попробовать ещё раз?",
             buttonText: "Не надо",
             cancelButtonText: "Повторить",
-            completion: {
-                self.dismiss(animated: true)
+            completion: { [weak self] in
+                self?.dismiss(animated: true)
             },
-            cancelCompletion: {
-                self.setImageFromURL(fullImageURL)
+            cancelCompletion: { [weak self] in
+                self?.setImageFromURL(fullImageURL)
             }
         )
         alertPresenter?.showAlert(alertModel)

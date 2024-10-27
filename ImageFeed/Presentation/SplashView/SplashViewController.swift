@@ -70,6 +70,7 @@ final class SplashViewController: UIViewController {
         let tabBarController = TabBarController()
         
         window.rootViewController = tabBarController
+        window.makeKeyAndVisible()
     }
     
     private func fetchProfile(token: String) {

@@ -13,6 +13,7 @@ final class ProfileViewController: UIViewController {
     // MARK: - Private properties
     
     private let profileService = ProfileService.shared
+    private let profileLogoutService = ProfileLogoutService.shared
     private var profileImageServiceObserver: NSObjectProtocol?
     private var imageCache = ImageCache.default
     
@@ -22,6 +23,8 @@ final class ProfileViewController: UIViewController {
         let profileImage = UIImageView()
         profileImage.backgroundColor = .ypBlack
         profileImage.layer.masksToBounds = true
+        profileImage.frame.size = CGSize(width: 70, height: 70)
+        profileImage.layer.cornerRadius = profileImage.frame.size.width / 2
         profileImage.image = UIImage(systemName: "person.crop.circle.fill")
         profileImage.tintColor = .ypGrey
         return profileImage
@@ -110,6 +113,12 @@ final class ProfileViewController: UIViewController {
         return favouritesImageView
     }()
     
+    private lazy var alertPresenter: AlertPresenterProtocol? = {
+        let presenter = AlertPresenter()
+        presenter.delegate = self
+        return presenter
+    }()
+    
     // MARK: - Lifecycle
     
     override func viewDidLoad() {
@@ -136,14 +145,8 @@ final class ProfileViewController: UIViewController {
         profileInfoStackView.isHidden = true
         profileImageView.image = UIImage(systemName: "person.crop.circle.fill")
         profileImageView.tintColor = .ypGrey
-        
-        OAuth2TokenStorage.shared.clearTokenStorage()
-        
-        
-        let allValues = UserDefaults.standard.dictionaryRepresentation()
-        allValues.keys.forEach{ key in
-            UserDefaults.standard.removeObject(forKey: key)
-        }
+        showExitAlert()
+  
     }
     
     // MARK: - Private Methods
@@ -162,10 +165,8 @@ final class ProfileViewController: UIViewController {
             return
         }
         profileImageView.kf.indicatorType = .activity
-        let processor = RoundCornerImageProcessor(cornerRadius: 61)
         profileImageView.kf.setImage(with: url,
-                                     placeholder: UIImage(systemName: "person.crop.circle.fill"),
-                                     options: [.processor(processor)]
+                                     placeholder: UIImage(systemName: "person.crop.circle.fill")
         ){ result in
             switch result {
             case .success(let value):
@@ -175,6 +176,27 @@ final class ProfileViewController: UIViewController {
                 print("Failed updateAvatar with error: \(error.localizedDescription)")
             }
         }
+    }
+    
+    private func showExitAlert() {
+        let alertModel = AlertModel(
+            title: "Пока, пока!",
+            message: "Уверены что хотите выйти?",
+            buttonText: "Нет",
+            cancelButtonText: "Да",
+            completion: { [weak self] in
+                guard let self else { return }
+                self.updateAvatar()
+                profileInfoStackView.isHidden = false
+                self.dismiss(animated: true)
+            },
+            cancelCompletion: { [weak self] in
+                guard let self else { return }
+                self.imageCache.clearCache()
+                self.profileLogoutService.logout()
+            }
+        )
+        alertPresenter?.showAlert(alertModel)
     }
     
     private func setProfileView() {
@@ -290,6 +312,14 @@ extension ProfileViewController {
         static let buttonsSize: CGFloat = 70
         static let leadingSize: CGFloat = 16
         static let emptyFavouritesSize: CGFloat = 115
+    }
+}
+
+// MARK: AlertPresenterDelegate
+
+extension ProfileViewController: AlertPresenterDelegate {
+    func showAlert(_ alert: UIAlertController) {
+        present(alert, animated: true)
     }
 }
 

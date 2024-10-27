@@ -176,4 +176,9 @@ final class ImagesListService {
         self.likeTask = likeTask
         likeTask.resume()
     }
+    
+    func removeAllImages() {
+        photos.removeAll()
+        lastLoadedPage = nil
+    }
 }
