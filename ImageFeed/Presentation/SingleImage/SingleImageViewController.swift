@@ -138,7 +138,7 @@ final class SingleImageViewController: UIViewController {
     
     // MARK: - Public Methods
     
-    func setImageFromURL(_ fullImageURL: URL) {
+    func setImageFromURL(fullImageURL: URL, isLiked: Bool) {
         UIBlockingProgressHUD.show()
         imageView.kf.setImage(with: fullImageURL) { [weak self] result in
             UIBlockingProgressHUD.dismiss()
@@ -147,14 +147,22 @@ final class SingleImageViewController: UIViewController {
             switch result {
             case .success(let imageResult):
                 self.rescaleAndCenterImageInScrollView(image: imageResult.image)
+                self.setIsLiked(isLiked)
             case .failure:
                 print("Failed set photo in single image view")
-                self.showError(fullImageURL)
+                self.showError(fullImageURL: fullImageURL, isLiked: isLiked)
             }
         }
     }
     
     // MARK: - Private methods
+
+    func setIsLiked(_ isLiked: Bool) {
+        let isLikedImage = UIImage.singleFavoritesActive
+        let notLikedImage = UIImage.singleFavoritesNoActive
+        
+        likeButton.imageView?.image = isLiked ? isLikedImage : notLikedImage
+    }
     
     private func setSingleImageView() {
         view.backgroundColor = .ypBlack
@@ -172,7 +180,7 @@ final class SingleImageViewController: UIViewController {
         )
     }
     
-    private func showError(_ fullImageURL: URL) {
+    private func showError(fullImageURL: URL, isLiked: Bool) {
         let alertModel = AlertModel(
             title: "Что-то пошло не так",
             message: "Попробовать ещё раз?",
@@ -182,7 +190,7 @@ final class SingleImageViewController: UIViewController {
                 self?.dismiss(animated: true)
             },
             cancelCompletion: { [weak self] in
-                self?.setImageFromURL(fullImageURL)
+                self?.setImageFromURL(fullImageURL: fullImageURL, isLiked: isLiked)
             }
         )
         alertPresenter?.showAlert(alertModel)

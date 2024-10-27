@@ -149,7 +149,8 @@ extension ImagesListViewController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         let singleImage = SingleImageViewController()
         guard let largeImageURL = photos[indexPath.row].largeImageURL else { return }
-        singleImage.setImageFromURL(largeImageURL)
+        let isLiked = photos[indexPath.row].isLiked
+        singleImage.setImageFromURL(fullImageURL: largeImageURL, isLiked: isLiked)
         singleImage.modalPresentationStyle = .overFullScreen
         present(singleImage, animated: true)
     }
