@@ -25,6 +25,9 @@ final class SingleImageViewController: UIViewController {
     
     // MARK: - Private properties
     
+    private var currentSingleImage: SingleImageModel?
+    private let imagesListService = ImagesListService.shared
+    
     private lazy var scrollView: UIScrollView = {
         let scrollView = UIScrollView()
         scrollView.indicatorStyle = .default
@@ -97,9 +100,9 @@ final class SingleImageViewController: UIViewController {
         imageView.image = image
         
         imageView.frame.size = image.size
-
+        
         rescaleAndCenterImageInScrollView(image: image)
-
+        
     }
     
     // MARK: - Actions
@@ -122,41 +125,56 @@ final class SingleImageViewController: UIViewController {
     
     @objc
     private func didTapLikeButton() {
-        isImageLiked.toggle()
-        let isLiked = UIImage.singleFavoritesActive
-        let notLiked = UIImage.singleFavoritesNoActive
+        guard let currentSingleImage else { return }
         
-        if isImageLiked {
-            likeButton.setImage(isLiked, for: .normal)
-        } else {
-            likeButton.setImage(notLiked, for: .normal)
+        UIBlockingProgressHUD.show()
+        imagesListService.changeLike(
+            photoId: currentSingleImage.photoId,
+            isLike: !currentSingleImage.isLiked
+        ) { [weak self] result in
+            guard let self else { return }
+            switch result {
+            case .success:
+                self.currentSingleImage?.isLiked.toggle()
+                self.setIsLiked(!currentSingleImage.isLiked)
+                UIBlockingProgressHUD.dismiss()
+            case .failure:
+                UIBlockingProgressHUD.dismiss()
+                print("Error changing like status")
+            }
         }
-        
-        
-        // TODO: Like button logic
     }
     
     // MARK: - Public Methods
     
-    func setImageFromURL(fullImageURL: URL, isLiked: Bool) {
+    func setImageFromURL(
+        fullImageURL: URL,
+        isLiked: Bool,
+        photoID: String
+    ) {
+        currentSingleImage = SingleImageModel(fullImageURL: fullImageURL, photoId: photoID, isLiked: isLiked)
         UIBlockingProgressHUD.show()
-        imageView.kf.setImage(with: fullImageURL) { [weak self] result in
+        imageView.kf.setImage(
+            with: fullImageURL
+//            placeholder: UIImage(systemName: "scribble.variable") // TODO: placeholder
+        ) { [weak self] result in
             UIBlockingProgressHUD.dismiss()
             
             guard let self = self else { return }
             switch result {
             case .success(let imageResult):
+                image = imageResult.image
                 self.rescaleAndCenterImageInScrollView(image: imageResult.image)
                 self.setIsLiked(isLiked)
             case .failure:
                 print("Failed set photo in single image view")
-                self.showError(fullImageURL: fullImageURL, isLiked: isLiked)
+                self.showError(fullImageURL: fullImageURL, isLiked: isLiked, photoID: photoID)
             }
         }
     }
     
     // MARK: - Private methods
-
+    
     func setIsLiked(_ isLiked: Bool) {
         let isLikedImage = UIImage.singleFavoritesActive
         let notLikedImage = UIImage.singleFavoritesNoActive
@@ -180,7 +198,7 @@ final class SingleImageViewController: UIViewController {
         )
     }
     
-    private func showError(fullImageURL: URL, isLiked: Bool) {
+    private func showError(fullImageURL: URL, isLiked: Bool, photoID: String) {
         let alertModel = AlertModel(
             title: "Что-то пошло не так",
             message: "Попробовать ещё раз?",
@@ -190,14 +208,18 @@ final class SingleImageViewController: UIViewController {
                 self?.dismiss(animated: true)
             },
             cancelCompletion: { [weak self] in
-                self?.setImageFromURL(fullImageURL: fullImageURL, isLiked: isLiked)
+                self?.setImageFromURL(
+                    fullImageURL: fullImageURL,
+                    isLiked: isLiked,
+                    photoID: photoID
+                )
             }
         )
         alertPresenter?.showAlert(alertModel)
     }
     
     // MARK: - Constraints
- 
+    
     private func backButtonConstraints() -> [NSLayoutConstraint] {
         [backButton.leadingAnchor.constraint(equalTo:view.safeAreaLayoutGuide.leadingAnchor, constant: 8),
          backButton.topAnchor.constraint(equalTo:view.safeAreaLayoutGuide.topAnchor, constant: 8),
@@ -228,7 +250,7 @@ final class SingleImageViewController: UIViewController {
          scrollView.bottomAnchor.constraint(equalTo: view.bottomAnchor)
         ]
     }
-
+    
     private func rescaleAndCenterImageInScrollView(image: UIImage) {
         let minZoomScale = scrollView.minimumZoomScale
         let maxZoomScale = scrollView.maximumZoomScale

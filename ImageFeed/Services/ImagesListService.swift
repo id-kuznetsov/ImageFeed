@@ -31,7 +31,7 @@ final class ImagesListService {
     
     // MARK: - Public Methods
     
-    func makePhotosRequest(page: String) -> URLRequest? {
+    private func makePhotosRequest(page: String) -> URLRequest? {
         let photoGetURL = URL(string: "photos", relativeTo: Constants.defaultBaseURL)
         guard let photoGetURL else {
             print("Unable to construct URL for photos Request")
@@ -111,7 +111,7 @@ final class ImagesListService {
         task.resume()
     }
     
-    func makeLikeRequest(photoID: String, isLike: Bool) -> URLRequest? {
+    private func makeLikeRequest(photoID: String, isLike: Bool) -> URLRequest? {
         let likeURL = URL(string: "photos/\(photoID)/like", relativeTo: Constants.defaultBaseURL)
         guard let likeURL else {
             print("Unable to construct URL for photos Request")
@@ -151,7 +151,7 @@ final class ImagesListService {
                    let newPhoto = Photo(
                             id: photo.id,
                             size: photo.size,
-                            createdAt: photo.createdAt,
+                            createdAt: photo.createdAt, 
                             welcomeDescription: photo.welcomeDescription,
                             thumbImageURL: photo.thumbImageURL,
                             largeImageURL: photo.largeImageURL,

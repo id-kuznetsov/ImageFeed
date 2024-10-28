@@ -28,7 +28,7 @@ final class ProfileImageService {
     
     // MARK: - Public Methods
     
-    func makeProfileImageRequest(username: String) -> URLRequest? {
+    private func makeProfileImageRequest(username: String) -> URLRequest? {
         let profileImageGetURL = URL(string: "users/\(username)", relativeTo: Constants.defaultBaseURL)
         
         guard let url = profileImageGetURL else {

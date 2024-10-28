@@ -112,7 +112,10 @@ final class ImagesListCell: UITableViewCell {
             }
         }
         
-        let imageDate = imagesListService.photos[indexPath.row].createdAt
+        guard let imageDate = imagesListService.photos[indexPath.row].createdAt else {
+            print("Image date is nil")
+            return
+        }
         
         dateLabel.text = dateFormatter.string(from: imageDate)
         

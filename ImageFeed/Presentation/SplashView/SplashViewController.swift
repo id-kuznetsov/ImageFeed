@@ -74,14 +74,10 @@ final class SplashViewController: UIViewController {
     }
     
     private func fetchProfile(token: String) {
-
         UIBlockingProgressHUD.show()
-     
         profileService.fetchProfile(token) { [weak self] result in
             guard let self else { return }
-            
             UIBlockingProgressHUD.dismiss()
-            
             switch result {
             case .success(let profile):
                 switchToTabBarController()
@@ -90,7 +86,6 @@ final class SplashViewController: UIViewController {
                 print("Error in \(#function) \(#file): \(error.localizedDescription)")
                 showError()
             }
-            
         }
     }
     
@@ -133,6 +128,8 @@ extension SplashViewController: AuthViewControllerDelegate {
         switchToTabBarController()
     }
 }
+
+// MARK: AlertPresenterDelegate
 
 extension SplashViewController: AlertPresenterDelegate {
     func showAlert(_ alert: UIAlertController) {

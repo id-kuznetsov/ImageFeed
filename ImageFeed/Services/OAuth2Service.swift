@@ -32,7 +32,7 @@ final class OAuth2Service {
     
     // MARK: - Public Methods
     
-    func makeOAuthTokenRequest(code: String) -> URLRequest? {
+    private func makeOAuthTokenRequest(code: String) -> URLRequest? {
         guard var urlComponents = URLComponents(string: Constants.unsplashGetTokenURLString) else {
             print("Unsplash get token URL is wrong")
             return nil
