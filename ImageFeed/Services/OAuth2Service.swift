@@ -32,6 +32,45 @@ final class OAuth2Service {
     
     // MARK: - Public Methods
     
+    func fetchOAuthToken(
+        code: String,
+        handler: @escaping (Result<String, Error>) -> Void
+    ) {
+        assert(Thread.isMainThread)
+        
+        guard lastCode != code else {
+            handler(.failure(AuthServiceError.invalidRequest))
+            return
+        }
+        
+        task?.cancel()
+        lastCode = code
+        
+        guard let request = makeOAuthTokenRequest(code: code) else {
+            print("Make request fail \(#file)")
+            return
+        }
+        
+        let task = urlSession.objectTask(for: request) { [weak self] (result: Result<OAuthTokenResponseBody, Error>) in
+            guard let self else { return }
+            switch result {
+            case .success(let data):
+                let token = data.accessToken
+                OAuth2TokenStorage.shared.token = token
+                handler(.success(token))
+                self.task = nil
+                self.lastCode = nil
+            case .failure(let error):
+                print("Error in \(#function) \(#file): \(error.localizedDescription)")
+                handler(.failure(error))
+            }
+        }
+        self.task = task
+        task.resume()
+    }
+    
+    // MARK: - Private Methods
+  
     private func makeOAuthTokenRequest(code: String) -> URLRequest? {
         guard var urlComponents = URLComponents(string: Constants.unsplashGetTokenURLString) else {
             print("Unsplash get token URL is wrong")
@@ -54,44 +93,6 @@ final class OAuth2Service {
         
         request.httpMethod = "POST"
         return request
-    }
-    
-    func fetchOAuthToken(
-        code: String,
-        handler: @escaping (Result<String, Error>) -> Void
-    ) {
-        assert(Thread.isMainThread)
-        
-        guard lastCode != code else {
-            handler(.failure(AuthServiceError.invalidRequest))
-            return
-        }
-        
-        task?.cancel()
-        lastCode = code
-        
-        guard let request = makeOAuthTokenRequest(code: code) else {
-            print("Make request fail \(#file)")
-            return
-        }
-        
-        
-        let task = urlSession.objectTask(for: request) { [weak self] (result: Result<OAuthTokenResponseBody, Error>) in
-            guard let self else { return }
-            switch result {
-            case .success(let data):
-                let token = data.accessToken
-                OAuth2TokenStorage.shared.token = token
-                handler(.success(token))
-                self.task = nil
-                self.lastCode = nil
-            case .failure(let error):
-                print("Error in \(#function) \(#file): \(error.localizedDescription)")
-                handler(.failure(error))
-            }
-        }
-        self.task = task
-        task.resume()
     }
 }
 

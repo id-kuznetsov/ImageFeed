@@ -30,40 +30,7 @@ final class ImagesListService {
     private init() {}
     
     // MARK: - Public Methods
-    
-    private func makePhotosRequest(page: String) -> URLRequest? {
-        let photoGetURL = URL(string: "photos", relativeTo: Constants.defaultBaseURL)
-        guard let photoGetURL else {
-            print("Unable to construct URL for photos Request")
-            return nil
-        }
-        
-        guard var urlComponents = URLComponents(url: photoGetURL, resolvingAgainstBaseURL: true) else {
-            print("Unsplash URL for photos request is wrong")
-            return nil
-        }
-        
-        urlComponents.queryItems = [
-            URLQueryItem(name: "page", value: page)
-        ]
-        
-        guard let url = urlComponents.url else {
-            print("Unable to construct URL for photo request")
-            return nil
-        }
-        
-        var request = URLRequest(url: url)
-        
-        guard let token = storage.token else {
-            print("Unable to get token")
-            return nil
-        }
-        
-        request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
-        
-        return request
-    }
-    
+
     func fetchPhotosNextPage() {
         assert(Thread.isMainThread)
         task?.cancel()
@@ -110,28 +77,7 @@ final class ImagesListService {
         self.task = task
         task.resume()
     }
-    
-    private func makeLikeRequest(photoID: String, isLike: Bool) -> URLRequest? {
-        let likeURL = URL(string: "photos/\(photoID)/like", relativeTo: Constants.defaultBaseURL)
-        guard let likeURL else {
-            print("Unable to construct URL for photos Request")
-            return nil
-        }
-        
-        var request = URLRequest(url: likeURL)
-        
-        guard let token = storage.token else {
-            print("Unable to get token")
-            return nil
-        }
-        
-        request.httpMethod = isLike ? "POST" : "DELETE"
-        
-        request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
-        
-        return request
-    }
-    
+
     func changeLike(photoId: String, isLike: Bool, _ completion: @escaping (Result<Void, Error>) -> Void) {
         assert(Thread.isMainThread)
         likeTask?.cancel()
@@ -181,4 +127,62 @@ final class ImagesListService {
         photos.removeAll()
         lastLoadedPage = nil
     }
+    
+    // MARK: - Private Methods
+  
+    private func makePhotosRequest(page: String) -> URLRequest? {
+        let photoGetURL = URL(string: "photos", relativeTo: Constants.defaultBaseURL)
+        guard let photoGetURL else {
+            print("Unable to construct URL for photos Request")
+            return nil
+        }
+        
+        guard var urlComponents = URLComponents(url: photoGetURL, resolvingAgainstBaseURL: true) else {
+            print("Unsplash URL for photos request is wrong")
+            return nil
+        }
+        
+        urlComponents.queryItems = [
+            URLQueryItem(name: "page", value: page)
+        ]
+        
+        guard let url = urlComponents.url else {
+            print("Unable to construct URL for photo request")
+            return nil
+        }
+        
+        var request = URLRequest(url: url)
+        
+        guard let token = storage.token else {
+            print("Unable to get token")
+            return nil
+        }
+        
+        request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
+        
+        return request
+    }
+    
+    private func makeLikeRequest(photoID: String, isLike: Bool) -> URLRequest? {
+        let likeURL = URL(string: "photos/\(photoID)/like", relativeTo: Constants.defaultBaseURL)
+        guard let likeURL else {
+            print("Unable to construct URL for photos Request")
+            return nil
+        }
+        
+        var request = URLRequest(url: likeURL)
+        
+        guard let token = storage.token else {
+            print("Unable to get token")
+            return nil
+        }
+        
+        request.httpMethod = isLike ? "POST" : "DELETE"
+        
+        request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
+        
+        return request
+    }
 }
+
+

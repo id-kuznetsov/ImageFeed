@@ -10,7 +10,7 @@ import Kingfisher
 
 final class ImagesListViewController: UIViewController {
     
-    // MARK: - Private properties
+    // MARK: - Private Properties
     
     private let imagesListService = ImagesListService.shared
     private var photos: [Photo] = []
@@ -49,6 +49,10 @@ final class ImagesListViewController: UIViewController {
         
         imagesListService.fetchPhotosNextPage()
         tableView.contentInset = UIEdgeInsets(top: 12, left: 0, bottom: 12, right: 0)
+    }
+    
+    deinit {
+        NotificationCenter.default.removeObserver(self)
     }
     
     // MARK: - Private Methods

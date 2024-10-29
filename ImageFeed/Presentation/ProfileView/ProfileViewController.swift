@@ -10,14 +10,12 @@ import Kingfisher
 
 final class ProfileViewController: UIViewController {
     
-    // MARK: - Private properties
+    // MARK: - Private Properties
     
     private let profileService = ProfileService.shared
     private let profileLogoutService = ProfileLogoutService.shared
     private var profileImageServiceObserver: NSObjectProtocol?
     private var imageCache = ImageCache.default
-    
-    private var favouritesPhotoCount = 0 // TODO: кол-во понравившихся фото
     
     private lazy var profileImageView: UIImageView = {
         let profileImage = UIImageView()
@@ -79,7 +77,6 @@ final class ProfileViewController: UIViewController {
     
     private lazy var favouritesCountLabel: UILabel = {
         let favouritesLabel = UILabel()
-        favouritesLabel.text = "\(favouritesPhotoCount)"
         favouritesLabel.textColor = .ypWhite
         favouritesLabel.font = .systemFont(ofSize: 13)
         favouritesLabel.textAlignment = .center
@@ -135,7 +132,6 @@ final class ProfileViewController: UIViewController {
                 self.updateAvatar()
             }
         updateAvatar()
-        
     }
     
     // MARK: - Actions
@@ -155,6 +151,7 @@ final class ProfileViewController: UIViewController {
         nameLabel.text = profile.name
         loginLabel.text = profile.loginName
         bioLabel.text = profile.bio
+        favouritesCountLabel.text = "\(profile.totalLikes)"
     }
     
     private func updateAvatar() {
@@ -227,7 +224,7 @@ final class ProfileViewController: UIViewController {
             emptyFavouritesImageViewConstraints()
         )
         
-        if favouritesPhotoCount == 0 {
+        if profile.totalLikes == 0 {
             favouritesBackgroundView.isHidden = true
         }
     }

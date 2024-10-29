@@ -18,10 +18,9 @@ final class ImagesListCell: UITableViewCell {
     
     weak var delegate: ImagesListCellDelegate?
     
-    // MARK: - Private properties
+    // MARK: - Private Properties
     
     private let imagesListService = ImagesListService.shared
-    private lazy var currentDate = Date()
     private lazy var dateFormatter: DateFormatter = {
         let formatter = DateFormatter()
         formatter.dateStyle = .long
@@ -75,10 +74,9 @@ final class ImagesListCell: UITableViewCell {
     override func prepareForReuse() {
         super.prepareForReuse()
         tableImage.kf.cancelDownloadTask()
-        
         tableImage.image = nil
         dateLabel.text = nil
-        likeButton.imageView?.image = nil
+        likeButton.setImage(UIImage.favoritesNoActive, for: .normal)
     }
     
     override func layoutSubviews() {
@@ -123,28 +121,12 @@ final class ImagesListCell: UITableViewCell {
         
         setGradient()
     }
-    
-    func setGradient() {
-        gradient.layer.masksToBounds = true
-        gradient.layer.cornerRadius = 16
-        gradient.layer.maskedCorners = [.layerMinXMaxYCorner, .layerMaxXMaxYCorner]
-        
-        let gradientLayer = CAGradientLayer()
-        gradientLayer.colors = [
-            UIColor.ypBlack0.cgColor,
-            UIColor.ypBlack20.cgColor
-        ]
-        gradientLayer.frame = gradient.bounds
-        if self.gradient.layer.sublayers?.count == nil  {
-            gradient.layer.addSublayer(gradientLayer)
-        }
-    }
-    
+
     func setIsLiked(_ isLiked: Bool) {
         let isLikedImage = UIImage.favoritesActive
         let notLikedImage = UIImage.favoritesNoActive
-        
-        likeButton.imageView?.image = isLiked ? isLikedImage : notLikedImage
+        let image = isLiked ? isLikedImage : notLikedImage
+        likeButton.setImage(image, for: .normal)
     }
     
     // MARK: - Private Methods
@@ -165,6 +147,22 @@ final class ImagesListCell: UITableViewCell {
             dateLabelConstraint() +
             gradientConstraint()
         )
+    }
+    
+    private func setGradient() {
+        gradient.layer.masksToBounds = true
+        gradient.layer.cornerRadius = 16
+        gradient.layer.maskedCorners = [.layerMinXMaxYCorner, .layerMaxXMaxYCorner]
+        
+        let gradientLayer = CAGradientLayer()
+        gradientLayer.colors = [
+            UIColor.ypBlack0.cgColor,
+            UIColor.ypBlack20.cgColor
+        ]
+        gradientLayer.frame = gradient.bounds
+        if self.gradient.layer.sublayers?.count == nil  {
+            gradient.layer.addSublayer(gradientLayer)
+        }
     }
     
     // MARK: - Constraints

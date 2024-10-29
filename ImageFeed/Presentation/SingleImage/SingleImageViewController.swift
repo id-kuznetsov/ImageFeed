@@ -6,10 +6,11 @@
 //
 
 import UIKit
+import Kingfisher
 
 final class SingleImageViewController: UIViewController {
     
-    // MARK: - Public properties
+    // MARK: - Public Properties
     
     var isImageLiked = false
     
@@ -23,7 +24,7 @@ final class SingleImageViewController: UIViewController {
         }
     }
     
-    // MARK: - Private properties
+    // MARK: - Private Properties
     
     private var currentSingleImage: SingleImageModel?
     private let imagesListService = ImagesListService.shared
@@ -156,7 +157,6 @@ final class SingleImageViewController: UIViewController {
         UIBlockingProgressHUD.show()
         imageView.kf.setImage(
             with: fullImageURL
-//            placeholder: UIImage(systemName: "scribble.variable") // TODO: placeholder
         ) { [weak self] result in
             UIBlockingProgressHUD.dismiss()
             
@@ -173,7 +173,7 @@ final class SingleImageViewController: UIViewController {
         }
     }
     
-    // MARK: - Private methods
+    // MARK: - Private Methods
     
     func setIsLiked(_ isLiked: Bool) {
         let isLikedImage = UIImage.singleFavoritesActive
@@ -257,9 +257,9 @@ final class SingleImageViewController: UIViewController {
         view.layoutIfNeeded()
         let visibleRectSize = scrollView.bounds.size
         let imageSize = image.size
-        let hScale =  imageSize.width / visibleRectSize.width
-        let vScale =  imageSize.height / visibleRectSize.height
-        let scale = min(maxZoomScale, max(minZoomScale, min(hScale, vScale)))
+        let hScale =   visibleRectSize.width / imageSize.width
+        let vScale =  visibleRectSize.height / imageSize.height 
+        let scale = min(maxZoomScale, max(minZoomScale, max(hScale, vScale)))
         scrollView.setZoomScale(scale, animated: false)
         scrollView.layoutIfNeeded()
         let newContentSize = scrollView.contentSize
@@ -284,7 +284,7 @@ final class SingleImageViewController: UIViewController {
     }
 }
 
-// MARK: - extensions
+// MARK: - Extensions
 
 // MARK: UIScrollViewDelegate
 

@@ -19,7 +19,7 @@ final class WebViewViewController: UIViewController {
     
     weak var delegate: WebViewViewControllerDelegate?
     
-    // MARK: - Private properties
+    // MARK: - Private Properties
     
     private var estimatedProgressObservation: NSKeyValueObservation?
     
@@ -63,7 +63,6 @@ final class WebViewViewController: UIViewController {
                  guard let self = self else { return }
                  self.updateProgress()
              })
-        
         loadAuthView()
     }
     
@@ -74,9 +73,6 @@ final class WebViewViewController: UIViewController {
     private func didTapBackButton() {
         delegate?.webViewViewControllerDidCancel(self)
     }
-    
-    // MARK: - Public Methods
-    
     
     // MARK: - Private Methods
     
@@ -92,7 +88,6 @@ final class WebViewViewController: UIViewController {
             progressViewConstraints() +
             webViewConstraints()
         )
-        
     }
     
     private func loadAuthView() {
