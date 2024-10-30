@@ -21,6 +21,7 @@ final class ImagesListCell: UITableViewCell {
     // MARK: - Private Properties
     
     private let imagesListService = ImagesListService.shared
+    private let isoFormatter = ISO8601DateFormatter()
     private lazy var dateFormatter: DateFormatter = {
         let formatter = DateFormatter()
         formatter.dateStyle = .long
@@ -93,32 +94,32 @@ final class ImagesListCell: UITableViewCell {
     // MARK: - Public Methods
     
     func configCell(cell:ImagesListCell, indexPath: IndexPath) {
-        guard let thumbImageURL = imagesListService.photos[indexPath.row].thumbImageURL else { return }
-        
-        tableImage.kf.indicatorType = .activity
-        
-        tableImage.kf.setImage(with: thumbImageURL,
-                               placeholder: UIImage(named: "placeholder")
-        ){ [weak self] result in
-            guard let self else { return }
-            switch result {
-            case .success(let value):
-                contentMode = .scaleAspectFill
-                self.tableImage.image = value.image
-            case .failure(let error):
-                print("Failed set photo in list with error: \(error.localizedDescription)")
+        if let thumbImageURL = imagesListService.photos[indexPath.row].thumbImageURL {
+            tableImage.kf.indicatorType = .activity
+            tableImage.kf.setImage(with: thumbImageURL,
+                                   placeholder: UIImage(named: "placeholder")
+            ){ [weak self] result in
+                guard let self else { return }
+                switch result {
+                case .success(let value):
+                    contentMode = .scaleAspectFill
+                    self.tableImage.image = value.image
+                case .failure(let error):
+                    print("Failed set photo in list with error: \(error.localizedDescription)")
+                }
             }
+        } else {
+            self.tableImage.image = UIImage(named: "placeholder")
         }
         
-        guard let imageDate = imagesListService.photos[indexPath.row].createdAt else {
-            print("Image date is nil")
-            return
+        if let imageDateString = imagesListService.photos[indexPath.row].createdAt,
+           let imageDate = isoFormatter.date(from: imageDateString) {
+            dateLabel.text = dateFormatter.string(from: imageDate)
+        } else {
+            dateLabel.text = ""
         }
-        
-        dateLabel.text = dateFormatter.string(from: imageDate)
-        
+  
         setIsLiked(imagesListService.photos[indexPath.row].isLiked)
-        
         setGradient()
     }
 

@@ -10,11 +10,31 @@ import Foundation
 struct Photo {
     let id: String
     let size: CGSize
-    let createdAt: Date?
+    let createdAt: String?
     let welcomeDescription: String?
     let thumbImageURL: URL?
     let largeImageURL: URL?
     let isLiked: Bool
+    
+    init(id: String, size: CGSize, createdAt: String?, welcomeDescription: String?, thumbImageURL: URL?, largeImageURL: URL?, isLiked: Bool) {
+        self.id = id
+        self.size = size
+        self.createdAt = createdAt
+        self.welcomeDescription = welcomeDescription
+        self.thumbImageURL = thumbImageURL
+        self.largeImageURL = largeImageURL
+        self.isLiked = isLiked
+    }
+    
+    init(from result: PhotoResult) {
+        self.id = result.id
+        self.size = CGSize(width: result.width, height: result.height)
+        self.createdAt = result.createdAt
+        self.welcomeDescription = result.description
+        self.thumbImageURL = URL(string: result.urls.thumb)
+        self.largeImageURL = URL(string: result.urls.full)
+        self.isLiked = result.likedByUser
+    }
 }
 
 struct LikeResult: Decodable {

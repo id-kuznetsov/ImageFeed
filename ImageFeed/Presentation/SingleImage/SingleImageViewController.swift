@@ -12,7 +12,8 @@ final class SingleImageViewController: UIViewController {
     
     // MARK: - Public Properties
     
-    var isImageLiked = false
+    weak var delegate: SingleImageViewControllerDelegate?
+    var indexPath: IndexPath?
     
     var image: UIImage? {
         didSet {
@@ -134,13 +135,14 @@ final class SingleImageViewController: UIViewController {
             isLike: !currentSingleImage.isLiked
         ) { [weak self] result in
             guard let self else { return }
+            UIBlockingProgressHUD.dismiss()
             switch result {
             case .success:
                 self.currentSingleImage?.isLiked.toggle()
                 self.setIsLiked(!currentSingleImage.isLiked)
-                UIBlockingProgressHUD.dismiss()
+                guard let indexPath = self.indexPath else { return }
+                self.delegate?.didUpdateLikeStatus(for: indexPath, isLiked: !currentSingleImage.isLiked)
             case .failure:
-                UIBlockingProgressHUD.dismiss()
                 print("Error changing like status")
             }
         }

@@ -14,7 +14,7 @@ final class ImagesListViewController: UIViewController {
     
     private let imagesListService = ImagesListService.shared
     private var photos: [Photo] = []
-
+    
     private lazy var tableView: UITableView = {
         let tableView = UITableView()
         tableView.register(ImagesListCell.self, forCellReuseIdentifier: ImagesListCell.reuseIdentifier)
@@ -152,6 +152,8 @@ extension ImagesListViewController: UITableViewDelegate {
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         let singleImage = SingleImageViewController()
+        singleImage.delegate = self
+        singleImage.indexPath = indexPath
         guard let largeImageURL = photos[indexPath.row].largeImageURL else { return }
         let isLiked = photos[indexPath.row].isLiked
         let photoID = photos[indexPath.row].id
@@ -168,13 +170,12 @@ extension ImagesListViewController: ImagesListCellDelegate {
         UIBlockingProgressHUD.show()
         imagesListService.changeLike(photoId: photo.id, isLike: !photo.isLiked) { [weak self] result in
             guard let self else { return }
+            UIBlockingProgressHUD.dismiss()
             switch result {
             case .success:
                 self.photos = self.imagesListService.photos
                 cell.setIsLiked(self.photos[indexPath.row].isLiked)
-                UIBlockingProgressHUD.dismiss()
             case .failure:
-                UIBlockingProgressHUD.dismiss()
                 showLikeError()
             }
         }
@@ -195,5 +196,25 @@ extension ImagesListViewController {
 extension ImagesListViewController: AlertPresenterDelegate {
     func showAlert(_ alert: UIAlertController) {
         present(alert, animated: true)
+    }
+}
+
+extension ImagesListViewController: SingleImageViewControllerDelegate {
+    func didUpdateLikeStatus(for indexPath: IndexPath, isLiked: Bool) {
+        let photo = photos[indexPath.row]
+        let newPhoto = Photo(
+                 id: photo.id,
+                 size: photo.size,
+                 createdAt: photo.createdAt,
+                 welcomeDescription: photo.welcomeDescription,
+                 thumbImageURL: photo.thumbImageURL,
+                 largeImageURL: photo.largeImageURL,
+                 isLiked: !photo.isLiked
+             )
+        self.photos[indexPath.row] = newPhoto
+        
+        if let cell = tableView.cellForRow(at: indexPath) as? ImagesListCell {
+            cell.setIsLiked(isLiked)
+        }
     }
 }

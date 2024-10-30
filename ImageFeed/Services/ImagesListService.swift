@@ -23,7 +23,6 @@ final class ImagesListService {
     private let storage = OAuth2TokenStorage()
     private var task: URLSessionTask?
     private var likeTask: URLSessionTask?
-    private let isoFormatter = ISO8601DateFormatter()
     
     // MARK: - Initializers
     
@@ -33,7 +32,11 @@ final class ImagesListService {
 
     func fetchPhotosNextPage() {
         assert(Thread.isMainThread)
-        task?.cancel()
+        
+        guard task == nil else {
+            print("Fetch photos task is already in progress")
+            return
+        }
         
         let nextPage = (lastLoadedPage ?? 0) + 1
         
@@ -47,24 +50,14 @@ final class ImagesListService {
             switch result {
             case .success(let photosData):
                 photosData.forEach {
-                    self.photos.append(
-                        Photo(
-                            id: $0.id,
-                            size: CGSize(width: $0.width, height: $0.height),
-                            createdAt: self.isoFormatter.date(from: $0.createdAt ?? "") ?? Date(),
-                            welcomeDescription: $0.description,
-                            thumbImageURL: URL(string: $0.urls.thumb),
-                            largeImageURL: URL(string: $0.urls.full),
-                            isLiked: $0.likedByUser
-                        )
+                    self.photos.append(Photo(from: $0)
                     )
                 }
                 
                 NotificationCenter.default
                     .post(
                         name: ImagesListService.didChangeNotification,
-                        object: self,
-                        userInfo: ["photos": ImagesListService.didChangeNotification]
+                        object: self
                     )
                 
                 self.task = nil
@@ -151,16 +144,7 @@ final class ImagesListService {
             return nil
         }
         
-        var request = URLRequest(url: url)
-        
-        guard let token = storage.token else {
-            print("Unable to get token")
-            return nil
-        }
-        
-        request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
-        
-        return request
+        return createRequest(withURL: url)
     }
     
     private func makeLikeRequest(photoID: String, isLike: Bool) -> URLRequest? {
@@ -169,16 +153,20 @@ final class ImagesListService {
             print("Unable to construct URL for photos Request")
             return nil
         }
+
+        let method = isLike ? "POST" : "DELETE"
         
-        var request = URLRequest(url: likeURL)
-        
+        return createRequest(withURL: likeURL, httpMethod: method)
+    }
+    
+    private func createRequest(withURL url: URL, httpMethod: String = "GET") -> URLRequest? {
         guard let token = storage.token else {
             print("Unable to get token")
             return nil
         }
         
-        request.httpMethod = isLike ? "POST" : "DELETE"
-        
+        var request = URLRequest(url: url)
+        request.httpMethod = httpMethod
         request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
         
         return request
