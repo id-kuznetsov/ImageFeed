@@ -15,13 +15,7 @@ final class SplashViewController: UIViewController {
     private let profileImageService = ProfileImageService.shared
     private let storage = OAuth2TokenStorage()
     private var didFetchProfile = false
-    
-    private lazy var alertPresenter: AlertPresenterProtocol? = {
-        let presenter = AlertPresenter()
-        presenter.delegate = self
-        return presenter
-    }()
-    
+
     private lazy var splashImageView: UIImageView = {
         let splashImage = UIImageView()
         splashImage.translatesAutoresizingMaskIntoConstraints = false
@@ -94,7 +88,7 @@ final class SplashViewController: UIViewController {
             buttonText: "OK",
             completion: {}
         )
-        alertPresenter?.showAlert(alertModel)
+        AlertPresenter.showAlert(alertModel, delegate: self)
     }
     
     private func showAuthViewController() {

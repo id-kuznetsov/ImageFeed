@@ -84,13 +84,7 @@ final class SingleImageViewController: UIViewController {
         button.translatesAutoresizingMaskIntoConstraints = false
         return button
     }()
-    
-    private lazy var alertPresenter: AlertPresenterProtocol? = {
-        let presenter = AlertPresenter()
-        presenter.delegate = self
-        return presenter
-    }()
-    
+
     // MARK: - Lifecycle
     
     override func viewDidLoad() {
@@ -217,7 +211,7 @@ final class SingleImageViewController: UIViewController {
                 )
             }
         )
-        alertPresenter?.showAlert(alertModel)
+        AlertPresenter.showAlert(alertModel, delegate: self)
     }
     
     // MARK: - Constraints

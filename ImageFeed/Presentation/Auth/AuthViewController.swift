@@ -17,13 +17,7 @@ final class AuthViewController: UIViewController {
     // MARK: - Private Properties
     
     private let oauth2Service = OAuth2Service.shared
-    
-    private lazy var alertPresenter: AlertPresenterProtocol? = {
-        let presenter = AlertPresenter()
-        presenter.delegate = self
-        return presenter
-    }()
-    
+
     private lazy var authLogoImageView: UIImageView = {
         let authLogo = UIImageView()
         authLogo.translatesAutoresizingMaskIntoConstraints = false
@@ -89,7 +83,7 @@ final class AuthViewController: UIViewController {
             buttonText: "OK",
             completion: {}
         )
-        alertPresenter?.showAlert(alertModel)
+        AlertPresenter.showAlert(alertModel, delegate: self)
     }
     
     // MARK: - Constraints

@@ -109,13 +109,7 @@ final class ProfileViewController: UIViewController {
         favouritesImageView.translatesAutoresizingMaskIntoConstraints = false
         return favouritesImageView
     }()
-    
-    private lazy var alertPresenter: AlertPresenterProtocol? = {
-        let presenter = AlertPresenter()
-        presenter.delegate = self
-        return presenter
-    }()
-    
+
     // MARK: - Lifecycle
     
     override func viewDidLoad() {
@@ -193,7 +187,7 @@ final class ProfileViewController: UIViewController {
                 self.profileLogoutService.logout()
             }
         )
-        alertPresenter?.showAlert(alertModel)
+        AlertPresenter.showAlert(alertModel, delegate: self)
     }
     
     private func setProfileView() {

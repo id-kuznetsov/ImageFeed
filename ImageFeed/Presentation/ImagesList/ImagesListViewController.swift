@@ -26,13 +26,7 @@ final class ImagesListViewController: UIViewController {
         tableView.separatorStyle = .none
         return tableView
     }()
-    
-    private lazy var alertPresenter: AlertPresenterProtocol? = {
-        let presenter = AlertPresenter()
-        presenter.delegate = self
-        return presenter
-    }()
-    
+
     // MARK: - Lifecycle
     
     override func viewDidLoad() {
@@ -91,7 +85,7 @@ final class ImagesListViewController: UIViewController {
             buttonText: "OK",
             completion: {}
         )
-        alertPresenter?.showAlert(alertModel)
+        AlertPresenter.showAlert(alertModel, delegate: self)
     }
 }
 

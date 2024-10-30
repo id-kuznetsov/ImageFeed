@@ -9,9 +9,7 @@ import UIKit
 
 final class AlertPresenter: AlertPresenterProtocol {
     
-    weak var delegate: AlertPresenterDelegate?
-    
-    func showAlert(_ alertModel: AlertModel)  {
+    static func showAlert(_ alertModel: AlertModel, delegate: AlertPresenterDelegate)  {
         let alert = UIAlertController(
             title: alertModel.title,
             message: alertModel.message,
@@ -37,6 +35,6 @@ final class AlertPresenter: AlertPresenterProtocol {
 
         alert.view.accessibilityIdentifier = "alert"
         
-        delegate?.showAlert(alert)
+        delegate.showAlert(alert)
     }    
 }
