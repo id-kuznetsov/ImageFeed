@@ -9,9 +9,7 @@ import UIKit
 
 final class AlertPresenter: AlertPresenterProtocol {
     
-    weak var delegate: AlertPresenterDelegate?
-    
-    func showResultAlert(_ alertModel: AlertModel)  {
+    static func showAlert(_ alertModel: AlertModel, delegate: AlertPresenterDelegate)  {
         let alert = UIAlertController(
             title: alertModel.title,
             message: alertModel.message,
@@ -22,9 +20,21 @@ final class AlertPresenter: AlertPresenterProtocol {
             style: .default) { _ in
                 alertModel.completion()
             }
+        
         alert.addAction(action)
+        
+        if let cancelButtonText = alertModel.cancelButtonText {
+            let cancelAction = UIAlertAction(
+                title: cancelButtonText,
+                style: .cancel
+            ) { _ in
+                alertModel.cancelCompletion?()
+            }
+            alert.addAction(cancelAction)
+        }
+
         alert.view.accessibilityIdentifier = "alert"
         
-        delegate?.showAlert(alert)
+        delegate.showAlert(alert)
     }    
 }

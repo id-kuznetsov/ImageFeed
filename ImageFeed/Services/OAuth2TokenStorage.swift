@@ -9,6 +9,7 @@ import Foundation
 import SwiftKeychainWrapper
 
 final class OAuth2TokenStorage {
+    
     // MARK: - Constants
     
     static let shared = OAuth2TokenStorage()
@@ -28,12 +29,14 @@ final class OAuth2TokenStorage {
         }
     }
     
-    // MARK: - Private properties
+    // MARK: - Private Properties
     
     private let storage = KeychainWrapper.standard
     private enum Keys: String {
         case token
     }
+    
+    // MARK: - Public Methods
     
     func clearTokenStorage() {
         storage.removeObject(forKey: Keys.token.rawValue)

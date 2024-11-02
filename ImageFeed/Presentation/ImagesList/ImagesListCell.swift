@@ -6,15 +6,22 @@
 //
 
 import UIKit
+import Kingfisher
 
 final class ImagesListCell: UITableViewCell {
+    
     // MARK: - Constants
     
     static let reuseIdentifier = "ImagesListCell"
     
-    // MARK: - Private properties
+    // MARK: - Properties
     
-    private lazy var currentDate = Date()
+    weak var delegate: ImagesListCellDelegate?
+    
+    // MARK: - Private Properties
+    
+    private let imagesListService = ImagesListService.shared
+    private let isoFormatter = ISO8601DateFormatter()
     private lazy var dateFormatter: DateFormatter = {
         let formatter = DateFormatter()
         formatter.dateStyle = .long
@@ -67,46 +74,60 @@ final class ImagesListCell: UITableViewCell {
     
     override func prepareForReuse() {
         super.prepareForReuse()
+        tableImage.kf.cancelDownloadTask()
         tableImage.image = nil
+        dateLabel.text = nil
+        likeButton.setImage(UIImage.favoritesNoActive, for: .normal)
+    }
+    
+    override func layoutSubviews() {
+        super.layoutSubviews()
+        gradient.layer.sublayers?.forEach { $0.frame = gradient.bounds }
     }
     
     // MARK: - Actions
     @objc
     private func didTapLikeButton() {
-        // TODO: Like button logic
+        delegate?.imageListCellDidTapLike(self)
     }
     
     // MARK: - Public Methods
     
     func configCell(cell:ImagesListCell, indexPath: IndexPath) {
-        guard let image = UIImage(named: "\(indexPath.row)") else { return }
+        if let thumbImageURL = imagesListService.photos[indexPath.row].thumbImageURL {
+            tableImage.kf.indicatorType = .activity
+            tableImage.kf.setImage(with: thumbImageURL,
+                                   placeholder: UIImage(named: "placeholder")
+            ){ [weak self] result in
+                guard let self else { return }
+                switch result {
+                case .success(let value):
+                    contentMode = .scaleAspectFill
+                    self.tableImage.image = value.image
+                case .failure(let error):
+                    print("Failed set photo in list with error: \(error.localizedDescription)")
+                }
+            }
+        } else {
+            self.tableImage.image = UIImage(named: "placeholder")
+        }
         
-        tableImage.image = image
-        
-        dateLabel.text = dateFormatter.string(from: currentDate)
-        
-        let isLiked = UIImage.favoritesActive
-        let notLiked = UIImage.favoritesNoActive
-        
-        likeButton.imageView?.image = indexPath.row % 2 == 0 ? isLiked : notLiked
-        
+        if let imageDateString = imagesListService.photos[indexPath.row].createdAt,
+           let imageDate = isoFormatter.date(from: imageDateString) {
+            dateLabel.text = dateFormatter.string(from: imageDate)
+        } else {
+            dateLabel.text = ""
+        }
+  
+        setIsLiked(imagesListService.photos[indexPath.row].isLiked)
         setGradient()
     }
-    
-    func setGradient() {
-        gradient.layer.masksToBounds = true
-        gradient.layer.cornerRadius = 16
-        gradient.layer.maskedCorners = [.layerMinXMaxYCorner, .layerMaxXMaxYCorner]
-        
-        let gradientLayer = CAGradientLayer()
-        gradientLayer.colors = [
-            UIColor.ypBlack0.cgColor,
-            UIColor.ypBlack20.cgColor
-        ]
-        gradientLayer.frame = gradient.bounds
-        if self.gradient.layer.sublayers?.count == nil  {
-            gradient.layer.addSublayer(gradientLayer)
-        }
+
+    func setIsLiked(_ isLiked: Bool) {
+        let isLikedImage = UIImage.favoritesActive
+        let notLikedImage = UIImage.favoritesNoActive
+        let image = isLiked ? isLikedImage : notLikedImage
+        likeButton.setImage(image, for: .normal)
     }
     
     // MARK: - Private Methods
@@ -129,8 +150,24 @@ final class ImagesListCell: UITableViewCell {
         )
     }
     
+    private func setGradient() {
+        gradient.layer.masksToBounds = true
+        gradient.layer.cornerRadius = 16
+        gradient.layer.maskedCorners = [.layerMinXMaxYCorner, .layerMaxXMaxYCorner]
+        
+        let gradientLayer = CAGradientLayer()
+        gradientLayer.colors = [
+            UIColor.ypBlack0.cgColor,
+            UIColor.ypBlack20.cgColor
+        ]
+        gradientLayer.frame = gradient.bounds
+        if self.gradient.layer.sublayers?.count == nil  {
+            gradient.layer.addSublayer(gradientLayer)
+        }
+    }
+    
     // MARK: - Constraints
- 
+    
     private func tableImageConstraint() -> [NSLayoutConstraint] {[
         tableImage.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 4),
         tableImage.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 16),

@@ -36,7 +36,6 @@ final class TabBarController: UITabBarController {
     // MARK: - Private Methods
     
     private func setAppearance() {
-        
         let appearance = UITabBarAppearance()
         appearance.configureWithOpaqueBackground()
         appearance.backgroundColor = .ypBlack

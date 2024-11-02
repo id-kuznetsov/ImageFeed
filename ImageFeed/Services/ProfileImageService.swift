@@ -8,6 +8,7 @@
 import Foundation
 
 final class ProfileImageService {
+   
     // MARK: - Constants
     
     static let shared = ProfileImageService()
@@ -26,25 +27,6 @@ final class ProfileImageService {
     private init() {}
     
     // MARK: - Public Methods
-    func makeProfileImageRequest(username: String) -> URLRequest? {
-        let profileImageGetURL = URL(string: "users/\(username)", relativeTo: Constants.defaultBaseURL)
-        
-        guard let url = profileImageGetURL else {
-            print("Unable to construct URL for profile image request")
-            return nil
-        }
-        
-        var request = URLRequest(url: url)
-        
-        guard let token = storage.token else {
-            print("Unable to get token")
-            return nil
-        }
-        
-        request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
-        
-        return request
-    }
     
     func fetchProfileImageURL(username: String, _ completion: @escaping (Result<String, Error>) -> Void) {
         assert(Thread.isMainThread)
@@ -54,7 +36,6 @@ final class ProfileImageService {
             print("Make request fail \(#file)")
             return
         }
-        
         
         let task = urlSession.objectTask(for: request) { [weak self] (result: Result<UserResult, Error>) in
             guard let self else { return }
@@ -84,5 +65,27 @@ final class ProfileImageService {
         }
         self.task = task
         task.resume()
+    }
+    
+    // MARK: - Private Methods
+    
+    private func makeProfileImageRequest(username: String) -> URLRequest? {
+        let profileImageGetURL = URL(string: "users/\(username)", relativeTo: Constants.defaultBaseURL)
+        
+        guard let url = profileImageGetURL else {
+            print("Unable to construct URL for profile image request")
+            return nil
+        }
+        
+        var request = URLRequest(url: url)
+        
+        guard let token = storage.token else {
+            print("Unable to get token")
+            return nil
+        }
+        
+        request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
+        
+        return request
     }
 }

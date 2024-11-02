@@ -8,6 +8,7 @@
 import Foundation
 
 final class ProfileService {
+    
     // MARK: - Constants
     
     static let shared = ProfileService()
@@ -24,20 +25,6 @@ final class ProfileService {
     private init() {}
     
     // MARK: - Public Methods
-    
-    func makeProfileRequest(token: String) -> URLRequest? {
-        let profileGetURL = URL(string: "me", relativeTo: Constants.defaultBaseURL)
-        
-        guard let url = profileGetURL else {
-            print("Unable to construct URL for profile Request")
-            return nil
-        }
-        
-        var request = URLRequest(url: url)
-        request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
-        
-        return request
-    }
     
     func fetchProfile(
         _ token: String,
@@ -59,7 +46,8 @@ final class ProfileService {
                     username: profileResult.username,
                     name: profileResult.name ?? " ",
                     loginName: "@" + profileResult.username,
-                    bio: profileResult.bio ?? " "
+                    bio: profileResult.bio ?? " ",
+                    totalLikes: profileResult.totalLikes ?? 0
                     )
                 guard let profileData = self.profile else {
                     print("Unable to construct Profile")
@@ -68,7 +56,7 @@ final class ProfileService {
                 completion(.success(profileData))
                 self.task = nil
                 
-            case .failure(let error): 
+            case .failure(let error):
                 print("Error in \(#function) \(#file): \(error.localizedDescription)")
                 completion(.failure(error))
             }
@@ -77,6 +65,21 @@ final class ProfileService {
         task.resume()
     }
     
+    // MARK: - Private Methods
+    
+    private func makeProfileRequest(token: String) -> URLRequest? {
+        let profileGetURL = URL(string: "me", relativeTo: Constants.defaultBaseURL)
+        
+        guard let url = profileGetURL else {
+            print("Unable to construct URL for profile Request")
+            return nil
+        }
+        
+        var request = URLRequest(url: url)
+        request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
+        
+        return request
+    }
 }
 
 

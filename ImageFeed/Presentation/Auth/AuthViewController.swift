@@ -10,20 +10,14 @@ import ProgressHUD
 
 final class AuthViewController: UIViewController {
     
-    // MARK: - Public properties
+    // MARK: - Public Properties
     
     weak var delegate: AuthViewControllerDelegate?
     
-    // MARK: - Private properties
+    // MARK: - Private Properties
     
     private let oauth2Service = OAuth2Service.shared
-    
-    private lazy var alertPresenter: AlertPresenterProtocol? = {
-        let presenter = AlertPresenter()
-        presenter.delegate = self
-        return presenter
-    }()
-    
+
     private lazy var authLogoImageView: UIImageView = {
         let authLogo = UIImageView()
         authLogo.translatesAutoresizingMaskIntoConstraints = false
@@ -52,7 +46,6 @@ final class AuthViewController: UIViewController {
         super.viewDidLoad()
         
         setAuthView()
-        
     }
     
     // MARK: - Actions
@@ -61,10 +54,7 @@ final class AuthViewController: UIViewController {
     private func didEntryButtonTapped() {
         showWebView()
     }
-    
-    // MARK: - Public Methods
-    
-    
+
     // MARK: - Private Methods
     
     private func setAuthView() {
@@ -77,7 +67,6 @@ final class AuthViewController: UIViewController {
             authLogoImageViewConstraints() +
             entryButtonConstraints()
         )
-        
     }
     
     private func showWebView() {
@@ -94,7 +83,7 @@ final class AuthViewController: UIViewController {
             buttonText: "OK",
             completion: {}
         )
-        alertPresenter?.showResultAlert(alertModel)
+        AlertPresenter.showAlert(alertModel, delegate: self)
     }
     
     // MARK: - Constraints
@@ -116,7 +105,7 @@ final class AuthViewController: UIViewController {
     }
 }
 // MARK: - Extension
-
+// MARK: WebViewViewControllerDelegate
 extension AuthViewController: WebViewViewControllerDelegate {
     func webViewViewController(_ vc: WebViewViewController, didAuthenticateWithCode code: String) {
         UIBlockingProgressHUD.show()
@@ -140,6 +129,8 @@ extension AuthViewController: WebViewViewControllerDelegate {
         vc.dismiss(animated: true)
     }
 }
+
+// MARK: AlertPresenterDelegate
 
 extension AuthViewController: AlertPresenterDelegate {
     func showAlert(_ alert: UIAlertController) {

@@ -10,9 +10,10 @@ import Kingfisher
 
 final class ProfileViewController: UIViewController {
     
-    // MARK: - Private properties
+    // MARK: - Private Properties
     
     private let profileService = ProfileService.shared
+    private let profileLogoutService = ProfileLogoutService.shared
     private var profileImageServiceObserver: NSObjectProtocol?
     private var imageCache = ImageCache.default
     
@@ -20,6 +21,8 @@ final class ProfileViewController: UIViewController {
         let profileImage = UIImageView()
         profileImage.backgroundColor = .ypBlack
         profileImage.layer.masksToBounds = true
+        profileImage.frame.size = CGSize(width: 70, height: 70)
+        profileImage.layer.cornerRadius = profileImage.frame.size.width / 2
         profileImage.image = UIImage(systemName: "person.crop.circle.fill")
         profileImage.tintColor = .ypGrey
         return profileImage
@@ -72,6 +75,24 @@ final class ProfileViewController: UIViewController {
         return favouritesLabel
     }()
     
+    private lazy var favouritesCountLabel: UILabel = {
+        let favouritesLabel = UILabel()
+        favouritesLabel.textColor = .ypWhite
+        favouritesLabel.font = .systemFont(ofSize: 13)
+        favouritesLabel.textAlignment = .center
+        favouritesLabel.translatesAutoresizingMaskIntoConstraints = false
+        return favouritesLabel
+    }()
+    
+    private lazy var favouritesBackgroundView: UIView = {
+        let favouritesBackgroundView = UIView()
+        favouritesBackgroundView.backgroundColor = .ypBlue
+        favouritesBackgroundView.layer.cornerRadius = 11
+        favouritesBackgroundView.layer.masksToBounds = true
+        favouritesBackgroundView.layoutMargins = UIEdgeInsets(top: 0, left: 12, bottom: 0, right: 12)
+        return favouritesBackgroundView
+    }()
+    
     private lazy var emptyFavouritesStackView: UIStackView = {
         let stackView = UIStackView()
         stackView.axis = .vertical
@@ -88,7 +109,7 @@ final class ProfileViewController: UIViewController {
         favouritesImageView.translatesAutoresizingMaskIntoConstraints = false
         return favouritesImageView
     }()
-    
+
     // MARK: - Lifecycle
     
     override func viewDidLoad() {
@@ -105,7 +126,6 @@ final class ProfileViewController: UIViewController {
                 self.updateAvatar()
             }
         updateAvatar()
-        
     }
     
     // MARK: - Actions
@@ -115,21 +135,17 @@ final class ProfileViewController: UIViewController {
         profileInfoStackView.isHidden = true
         profileImageView.image = UIImage(systemName: "person.crop.circle.fill")
         profileImageView.tintColor = .ypGrey
-        
-        OAuth2TokenStorage.shared.clearTokenStorage()
-        
-        
-        let allValues = UserDefaults.standard.dictionaryRepresentation()
-        allValues.keys.forEach{ key in
-            UserDefaults.standard.removeObject(forKey: key)
-        }
+        showExitAlert()
+  
     }
     
     // MARK: - Private Methods
+    
     private func updateProfileDetails(profile: Profile) {
         nameLabel.text = profile.name
         loginLabel.text = profile.loginName
         bioLabel.text = profile.bio
+        favouritesCountLabel.text = "\(profile.totalLikes)"
     }
     
     private func updateAvatar() {
@@ -140,10 +156,8 @@ final class ProfileViewController: UIViewController {
             return
         }
         profileImageView.kf.indicatorType = .activity
-        let processor = RoundCornerImageProcessor(cornerRadius: 61)
         profileImageView.kf.setImage(with: url,
-                                     placeholder: UIImage(systemName: "person.crop.circle.fill"),
-                                     options: [.processor(processor)]
+                                     placeholder: UIImage(systemName: "person.crop.circle.fill")
         ){ result in
             switch result {
             case .success(let value):
@@ -155,6 +169,27 @@ final class ProfileViewController: UIViewController {
         }
     }
     
+    private func showExitAlert() {
+        let alertModel = AlertModel(
+            title: "Пока, пока!",
+            message: "Уверены что хотите выйти?",
+            buttonText: "Нет",
+            cancelButtonText: "Да",
+            completion: { [weak self] in
+                guard let self else { return }
+                self.updateAvatar()
+                profileInfoStackView.isHidden = false
+                self.dismiss(animated: true)
+            },
+            cancelCompletion: { [weak self] in
+                guard let self else { return }
+                self.imageCache.clearCache()
+                self.profileLogoutService.logout()
+            }
+        )
+        AlertPresenter.showAlert(alertModel, delegate: self)
+    }
+    
     private func setProfileView() {
         guard let profile = profileService.profile else {
             print("No profile data")
@@ -164,9 +199,10 @@ final class ProfileViewController: UIViewController {
         
         view.backgroundColor = .ypBlack
         addLabelsInProfileInfoStackView()
+        favouritesBackgroundView.addSubview(favouritesCountLabel)
         addFavouritesPlaceHolder()
         
-        [profileImageView, exitButton, profileInfoStackView, favouritesLabel, emptyFavouritesStackView].forEach{
+        [profileImageView, exitButton, profileInfoStackView, favouritesLabel, favouritesBackgroundView, emptyFavouritesStackView].forEach{
             $0.translatesAutoresizingMaskIntoConstraints = false
             view.addSubview($0)
         }
@@ -176,9 +212,15 @@ final class ProfileViewController: UIViewController {
             exitButtonViewConstraints() +
             profileStackViewConstraints() +
             favouritesLabelViewConstraints() +
+            favouritesCountLabelViewConstraints() +
+            favouritesBackgroundViewConstraints() +
             emptyFavouritesStackViewConstraints() +
             emptyFavouritesImageViewConstraints()
         )
+        
+        if profile.totalLikes == 0 {
+            favouritesBackgroundView.isHidden = true
+        }
     }
     
     private func addLabelsInProfileInfoStackView() {
@@ -218,7 +260,22 @@ final class ProfileViewController: UIViewController {
     private func favouritesLabelViewConstraints() -> [NSLayoutConstraint] {
         [favouritesLabel.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: Constants.leadingSize),
          favouritesLabel.topAnchor.constraint(equalTo: profileImageView.bottomAnchor, constant: 100),
-         favouritesLabel.heightAnchor.constraint(equalToConstant: 23)
+         favouritesLabel.heightAnchor.constraint(equalToConstant: 22)
+        ]
+    }
+    
+    private func favouritesCountLabelViewConstraints() -> [NSLayoutConstraint] {
+        [favouritesCountLabel.leadingAnchor.constraint(equalTo: favouritesBackgroundView.layoutMarginsGuide.leadingAnchor),
+        favouritesCountLabel.trailingAnchor.constraint(equalTo: favouritesBackgroundView.layoutMarginsGuide.trailingAnchor),
+        favouritesCountLabel.topAnchor.constraint(equalTo: favouritesBackgroundView.layoutMarginsGuide.topAnchor),
+        favouritesCountLabel.bottomAnchor.constraint(equalTo: favouritesBackgroundView.layoutMarginsGuide.bottomAnchor)
+        ]
+    }
+    
+    private func favouritesBackgroundViewConstraints() -> [NSLayoutConstraint] {
+        [favouritesBackgroundView.leadingAnchor.constraint(equalTo: favouritesLabel.trailingAnchor, constant: 8),
+         favouritesBackgroundView.centerYAnchor.constraint(equalTo: favouritesLabel.centerYAnchor),
+         favouritesBackgroundView.heightAnchor.constraint(equalToConstant: 22)
         ]
     }
     
@@ -246,6 +303,14 @@ extension ProfileViewController {
         static let buttonsSize: CGFloat = 70
         static let leadingSize: CGFloat = 16
         static let emptyFavouritesSize: CGFloat = 115
+    }
+}
+
+// MARK: AlertPresenterDelegate
+
+extension ProfileViewController: AlertPresenterDelegate {
+    func showAlert(_ alert: UIAlertController) {
+        present(alert, animated: true)
     }
 }
 

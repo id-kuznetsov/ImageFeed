@@ -9,19 +9,13 @@ import UIKit
 
 final class SplashViewController: UIViewController {
     
-    // MARK: - Private properties
+    // MARK: - Private Properties
     
     private let profileService = ProfileService.shared
     private let profileImageService = ProfileImageService.shared
     private let storage = OAuth2TokenStorage()
     private var didFetchProfile = false
-    
-    private lazy var alertPresenter: AlertPresenterProtocol? = {
-        let presenter = AlertPresenter()
-        presenter.delegate = self
-        return presenter
-    }()
-    
+
     private lazy var splashImageView: UIImageView = {
         let splashImage = UIImageView()
         splashImage.translatesAutoresizingMaskIntoConstraints = false
@@ -35,17 +29,16 @@ final class SplashViewController: UIViewController {
         super.viewDidLoad()
         
         setSplashView()
-        
     }
     
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         
         checkAuthorization()
-        
     }
     
-    // MARK: - Private methods
+    // MARK: - Private Methods
+    
     private func checkAuthorization() {
         if let token = storage.token, !didFetchProfile {
             fetchProfile(token: token)
@@ -69,17 +62,14 @@ final class SplashViewController: UIViewController {
         let tabBarController = TabBarController()
         
         window.rootViewController = tabBarController
+        window.makeKeyAndVisible()
     }
     
     private func fetchProfile(token: String) {
-
         UIBlockingProgressHUD.show()
-     
         profileService.fetchProfile(token) { [weak self] result in
             guard let self else { return }
-            
             UIBlockingProgressHUD.dismiss()
-            
             switch result {
             case .success(let profile):
                 switchToTabBarController()
@@ -88,7 +78,6 @@ final class SplashViewController: UIViewController {
                 print("Error in \(#function) \(#file): \(error.localizedDescription)")
                 showError()
             }
-            
         }
     }
     
@@ -99,7 +88,7 @@ final class SplashViewController: UIViewController {
             buttonText: "OK",
             completion: {}
         )
-        alertPresenter?.showResultAlert(alertModel)
+        AlertPresenter.showAlert(alertModel, delegate: self)
     }
     
     private func showAuthViewController() {
@@ -131,6 +120,8 @@ extension SplashViewController: AuthViewControllerDelegate {
         switchToTabBarController()
     }
 }
+
+// MARK: AlertPresenterDelegate
 
 extension SplashViewController: AlertPresenterDelegate {
     func showAlert(_ alert: UIAlertController) {
