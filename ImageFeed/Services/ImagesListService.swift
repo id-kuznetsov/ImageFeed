@@ -17,11 +17,14 @@ final class ImagesListService {
     // MARK: - Private Properties
     
     private(set) var photos: [Photo] = []
+    private(set) var likedPhotos: [Photo] = []
     
     private var lastLoadedPage: Int?
+    private var lastLoadedLikedPhotosPage: Int?
     private let urlSession = URLSession.shared
     private let storage = OAuth2TokenStorage()
     private var task: URLSessionTask?
+    private var likedPhotosTask: URLSessionTask?
     private var likeTask: URLSessionTask?
     
     // MARK: - Initializers
@@ -68,6 +71,47 @@ final class ImagesListService {
             }
         }
         self.task = task
+        task.resume()
+    }
+    
+    func fetchLikedPhotosNextPage(username: String) {
+        assert(Thread.isMainThread)
+        
+        guard likedPhotosTask == nil else {
+            print("Fetch liked photos task is already in progress")
+            return
+        }
+        
+        let nextPage = (lastLoadedLikedPhotosPage ?? 0) + 1
+        
+        guard let request = makeLikedPhotosRequest(page: nextPage.description, username: username) else {
+            print("Make liked photos request fail \(#file)")
+            return
+        }
+        
+        let task = urlSession.objectTask(for: request) { [weak self] (result: Result<[PhotoResult], Error>) in
+            guard let self else { return }
+            switch result {
+            case .success(let photosData):
+                photosData.forEach {
+                    self.likedPhotos.append(Photo(from: $0)
+                    )
+                }
+                
+                NotificationCenter.default
+                    .post(
+                        name: ImagesListService.didChangeNotification,
+                        object: self
+                    )
+                
+                self.likedPhotosTask = nil
+                self.lastLoadedLikedPhotosPage = nextPage
+                
+            case .failure(let error):
+                print("Error in \(#function) \(#file): \(error.localizedDescription)")
+            }
+        }
+        self.likedPhotosTask = task
         task.resume()
     }
 
@@ -118,6 +162,7 @@ final class ImagesListService {
     
     func removeAllImages() {
         photos.removeAll()
+        likedPhotos.removeAll()
         lastLoadedPage = nil
     }
     
@@ -132,6 +177,30 @@ final class ImagesListService {
         
         guard var urlComponents = URLComponents(url: photoGetURL, resolvingAgainstBaseURL: true) else {
             print("Unsplash URL for photos request is wrong")
+            return nil
+        }
+        
+        urlComponents.queryItems = [
+            URLQueryItem(name: "page", value: page)
+        ]
+        
+        guard let url = urlComponents.url else {
+            print("Unable to construct URL for photo request")
+            return nil
+        }
+        
+        return createRequest(withURL: url)
+    }
+    
+    private func makeLikedPhotosRequest(page: String, username: String) -> URLRequest? {
+        let likedPhotosURL = URL(string: "users/\(username)/likes", relativeTo: Constants.defaultBaseURL)
+        guard let likedPhotosURL else {
+            print("Unable to construct URL for liked photos request")
+            return nil
+        }
+        
+        guard var urlComponents = URLComponents(url: likedPhotosURL, resolvingAgainstBaseURL: true) else {
+            print("Unsplash URL for liked photos request is wrong")
             return nil
         }
         
