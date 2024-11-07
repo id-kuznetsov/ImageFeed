@@ -71,6 +71,9 @@ final class AuthViewController: UIViewController {
     
     private func showWebView() {
         let webViewViewController = WebViewViewController()
+        let webViewPresenter = WebViewPresenter()
+        webViewViewController.presenter = webViewPresenter
+        webViewPresenter.view = webViewViewController
         webViewViewController.delegate = self
         webViewViewController.modalPresentationStyle = .fullScreen
         present(webViewViewController, animated: true)
@@ -109,12 +112,12 @@ final class AuthViewController: UIViewController {
 extension AuthViewController: WebViewViewControllerDelegate {
     func webViewViewController(_ vc: WebViewViewController, didAuthenticateWithCode code: String) {
         UIBlockingProgressHUD.show()
-        print("UIBlockingProgressHUD is shown \(#file) \(#line)")
+        
         oauth2Service.fetchOAuthToken(code: code) { [weak self] result in
             guard let self else { return }
             
             UIBlockingProgressHUD.dismiss()
-            print("UIBlockingProgressHUD is dismissed \(#file) \(#line)")
+            
             switch result {
             case .success(_):
                 self.delegate?.didAuthenticate(self)

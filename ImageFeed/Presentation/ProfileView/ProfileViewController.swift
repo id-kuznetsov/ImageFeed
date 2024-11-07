@@ -157,7 +157,8 @@ final class ProfileViewController: UIViewController {
         }
         profileImageView.kf.indicatorType = .activity
         profileImageView.kf.setImage(with: url,
-                                     placeholder: UIImage(systemName: "person.crop.circle.fill")
+                                     placeholder: UIImage(systemName: "person.crop.circle.fill"),
+                                     options: [.fromMemoryCacheOrRefresh]
         ){ result in
             switch result {
             case .success(let value):
