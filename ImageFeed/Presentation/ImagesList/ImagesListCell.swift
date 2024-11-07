@@ -122,6 +122,36 @@ final class ImagesListCell: UITableViewCell {
         setIsLiked(imagesListService.photos[indexPath.row].isLiked)
         setGradient()
     }
+    
+    func configLikedCell(cell:ImagesListCell, indexPath: IndexPath) {
+        if let thumbImageURL = imagesListService.likedPhotos[indexPath.row - 1].thumbImageURL {
+            tableImage.kf.indicatorType = .activity
+            tableImage.kf.setImage(with: thumbImageURL,
+                                   placeholder: UIImage(named: "placeholder")
+            ){ [weak self] result in
+                guard let self else { return }
+                switch result {
+                case .success(let value):
+                    contentMode = .scaleAspectFill
+                    self.tableImage.image = value.image
+                case .failure(let error):
+                    print("Failed set photo in list with error: \(error.localizedDescription)")
+                }
+            }
+        } else {
+            self.tableImage.image = UIImage(named: "placeholder")
+        }
+        
+        if let imageDateString = imagesListService.likedPhotos[indexPath.row - 1].createdAt,
+           let imageDate = isoFormatter.date(from: imageDateString) {
+            dateLabel.text = dateFormatter.string(from: imageDate)
+        } else {
+            dateLabel.text = ""
+        }
+  
+        setIsLiked(imagesListService.likedPhotos[indexPath.row - 1].isLiked)
+        setGradient()
+    }
 
     func setIsLiked(_ isLiked: Bool) {
         let isLikedImage = UIImage.favoritesActive

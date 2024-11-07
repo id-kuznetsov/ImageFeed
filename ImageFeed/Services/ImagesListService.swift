@@ -26,6 +26,7 @@ final class ImagesListService {
     private var task: URLSessionTask?
     private var likedPhotosTask: URLSessionTask?
     private var likeTask: URLSessionTask?
+    private let profileService = ProfileService.shared
     
     // MARK: - Initializers
     
@@ -140,8 +141,45 @@ final class ImagesListService {
                             largeImageURL: photo.largeImageURL,
                             isLiked: !photo.isLiked
                         )
-
+                    
                     self.photos[index] = newPhoto
+                    // TODO: как-то изменить total likes
+                    guard var profile = profileService.profile else { return }
+                    if isLike {
+                        profile.totalLikes += 1
+                    } else {
+                        profile.totalLikes -= 1
+                    }
+                    
+                    NotificationCenter.default
+                        .post(
+                            name: ImagesListService.didChangeNotification,
+                            object: self,
+                            userInfo: ["photos": ImagesListService.didChangeNotification]
+                        )
+                    completion(.success(()))
+                }
+                if let index = self.likedPhotos.firstIndex(where: { $0.id == photoId }) {
+                    let photo = self.likedPhotos[index]
+
+                   let newPhoto = Photo(
+                            id: photo.id,
+                            size: photo.size,
+                            createdAt: photo.createdAt,
+                            welcomeDescription: photo.welcomeDescription,
+                            thumbImageURL: photo.thumbImageURL,
+                            largeImageURL: photo.largeImageURL,
+                            isLiked: !photo.isLiked
+                        )
+                    
+                    self.likedPhotos[index] = newPhoto
+                    // TODO: как-то изменить total likes
+                    guard var profile = profileService.profile else { return }
+                    if isLike {
+                        profile.totalLikes += 1
+                    } else {
+                        profile.totalLikes -= 1
+                    }
                     
                     NotificationCenter.default
                         .post(

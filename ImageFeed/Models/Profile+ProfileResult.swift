@@ -9,7 +9,7 @@ import Foundation
 
 struct Profile {
     let username, name, loginName, bio: String
-    let totalLikes: Int
+    var totalLikes: Int
 }
 
 struct ProfileResult: Decodable {

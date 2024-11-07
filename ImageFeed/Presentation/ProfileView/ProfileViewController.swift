@@ -109,7 +109,7 @@ final class ProfileViewController: UIViewController {
         favouritesImageView.translatesAutoresizingMaskIntoConstraints = false
         return favouritesImageView
     }()
-
+    
     // MARK: - Lifecycle
     
     override func viewDidLoad() {
@@ -136,7 +136,7 @@ final class ProfileViewController: UIViewController {
         profileImageView.image = UIImage(systemName: "person.crop.circle.fill")
         profileImageView.tintColor = .ypGrey
         showExitAlert()
-  
+        
     }
     
     // MARK: - Private Methods
@@ -157,7 +157,8 @@ final class ProfileViewController: UIViewController {
         }
         profileImageView.kf.indicatorType = .activity
         profileImageView.kf.setImage(with: url,
-                                     placeholder: UIImage(systemName: "person.crop.circle.fill")
+                                     placeholder: UIImage(systemName: "person.crop.circle.fill"),
+                                     options:[.fromMemoryCacheOrRefresh]
         ){ result in
             switch result {
             case .success(let value):
@@ -266,9 +267,9 @@ final class ProfileViewController: UIViewController {
     
     private func favouritesCountLabelViewConstraints() -> [NSLayoutConstraint] {
         [favouritesCountLabel.leadingAnchor.constraint(equalTo: favouritesBackgroundView.layoutMarginsGuide.leadingAnchor),
-        favouritesCountLabel.trailingAnchor.constraint(equalTo: favouritesBackgroundView.layoutMarginsGuide.trailingAnchor),
-        favouritesCountLabel.topAnchor.constraint(equalTo: favouritesBackgroundView.layoutMarginsGuide.topAnchor),
-        favouritesCountLabel.bottomAnchor.constraint(equalTo: favouritesBackgroundView.layoutMarginsGuide.bottomAnchor)
+         favouritesCountLabel.trailingAnchor.constraint(equalTo: favouritesBackgroundView.layoutMarginsGuide.trailingAnchor),
+         favouritesCountLabel.topAnchor.constraint(equalTo: favouritesBackgroundView.layoutMarginsGuide.topAnchor),
+         favouritesCountLabel.bottomAnchor.constraint(equalTo: favouritesBackgroundView.layoutMarginsGuide.bottomAnchor)
         ]
     }
     
