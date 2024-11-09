@@ -22,6 +22,7 @@ final class ImagesListCell: UITableViewCell {
     
     private let imagesListService = ImagesListService.shared
     private let isoFormatter = ISO8601DateFormatter()
+    
     private lazy var dateFormatter: DateFormatter = {
         let formatter = DateFormatter()
         formatter.dateStyle = .long

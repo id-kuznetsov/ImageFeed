@@ -1,5 +1,5 @@
 //
-//  ImageFeedTests.swift
+//  WebViewTests.swift
 //  ImageFeedTests
 //
 //  Created by Ilya Kuznetsov on 08.11.2024.
@@ -100,4 +100,3 @@ final class WebViewTests: XCTestCase {
     }
 }
 
-//
