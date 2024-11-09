@@ -103,8 +103,6 @@ final class ImagesListViewController: UIViewController, ImagesListViewController
             ]
         )
     }
-    
-
 }
 
 // MARK: - Extensions
