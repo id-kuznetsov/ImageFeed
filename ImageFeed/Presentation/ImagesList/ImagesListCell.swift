@@ -43,6 +43,7 @@ final class ImagesListCell: UITableViewCell {
         guard let buttonImage = UIImage(named: "FavoritesNoActive") else { return UIButton() }
         let button = UIButton(type: .custom)
         button.setImage(buttonImage, for: .normal)
+        button.accessibilityIdentifier = "Like button"
         button.addTarget(self, action: #selector(didTapLikeButton), for: .touchUpInside)
         return button
     }()
