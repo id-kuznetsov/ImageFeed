@@ -32,7 +32,7 @@ final class ImagesListPresenter: ImagesListPresenterProtocol {
     }
     
     func loadNextPage(indexPath: IndexPath) {
-        if indexPath.row + 1 == photos.count { // TODO: может тут
+        if indexPath.row + 1 == photos.count {
             imagesListService.fetchPhotosNextPage()
         }
     }

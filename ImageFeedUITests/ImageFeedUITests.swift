@@ -81,6 +81,9 @@ final class ImageFeedUITests: XCTestCase {
         
         let alert = app.alerts["alert"]
         XCTAssertTrue(alert.exists)
+        XCTAssertFalse(app.staticTexts["Paste your name here"].exists)
+        XCTAssertFalse(app.staticTexts["Paste your login here(@example)"].exists)
+        
         XCTAssertTrue(app.staticTexts["Пока, пока!"].exists)
         let yesButton = alert.scrollViews.otherElements.buttons["Да"]
         XCTAssertTrue(yesButton.exists)
