@@ -10,13 +10,10 @@ import Kingfisher
 
 final class ImagesListViewController: UIViewController, ImagesListViewControllerProtocol {
 
-    
     // MARK: - Public Properties
 
     var presenter: (any ImagesListPresenterProtocol)?
-    
-//    private var photos: [Photo] = []
-//    
+
     // MARK: - Private Properties
     
     private let imagesListService = ImagesListService.shared
