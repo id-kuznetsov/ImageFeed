@@ -60,5 +60,4 @@ final class ProfileViewTests: XCTestCase {
         // Then
         XCTAssertTrue(viewController.viewUpdateAvatarCalled)
     }
-
 }

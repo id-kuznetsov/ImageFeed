@@ -83,5 +83,4 @@ final class ImagesListTests: XCTestCase {
         // Then
         XCTAssertTrue(viewController.tableViewUpdateAnimatedCalled)
     }
-
 }

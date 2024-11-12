@@ -16,13 +16,6 @@ final class ImagesListViewControllerSpy: ImagesListViewControllerProtocol {
         tableViewUpdateAnimatedCalled = true
     }
     
-    func blockInteraction(_ state: Bool) {
-        
-    }
-    
-    func showError() {
-        
-    }
-    
-    
+    func blockInteraction(_ state: Bool) {}
+    func showError() {}
 }

@@ -15,7 +15,7 @@ final class WebViewPresenter: WebViewPresenterProtocol {
     
     // MARK: - Private Properties
     
-    private var authHelper: AuthHelperProtocol
+    private let authHelper: AuthHelperProtocol
     
     // MARK: - Lifecycle
     
@@ -48,8 +48,4 @@ final class WebViewPresenter: WebViewPresenterProtocol {
     func code(from url: URL) -> String? {
         authHelper.code(from: url)
     }
-    
-    // MARK: - Private Methods
-    
-    
 }

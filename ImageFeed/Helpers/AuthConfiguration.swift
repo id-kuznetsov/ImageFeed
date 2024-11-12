@@ -7,17 +7,6 @@
 
 import Foundation
 
-enum Constants {
-    static let accessKey = "ej-XzwMrTTUmvG9_5tdREQjSpZq5FZiMi9SEz2_BOQ4"
-    static let secretKey = "g02jJ4bZGXYIb6qX0YUo-EqITnAh417zE5o4gdeBRG0"
-    static let redirectURI = "urn:ietf:wg:oauth:2.0:oob"
-    static let accessScope = "public+read_user+write_likes"
-    
-    static let defaultBaseURL = URL(string: "https://api.unsplash.com/")!
-    static let unsplashGetTokenURLString = "https://unsplash.com/oauth/token"
-    static let unsplashAuthorizeURLString = "https://unsplash.com/oauth/authorize"
-}
-
 struct AuthConfiguration {
     let accessKey: String
     let secretKey: String
@@ -28,11 +17,14 @@ struct AuthConfiguration {
     let authURLString: String
     
     static var standard: AuthConfiguration {
-        return AuthConfiguration(accessKey: Constants.accessKey,
-                                 secretKey: Constants.secretKey,
-                                 redirectURI: Constants.redirectURI,
-                                 accessScope: Constants.accessScope,
-                                 defaultBaseURL: Constants.defaultBaseURL,
-                                 getTokenURLString: Constants.unsplashGetTokenURLString,
-                                 authURLString: Constants.unsplashAuthorizeURLString)
-    }}
+        .init(
+            accessKey: Constants.accessKey,
+            secretKey: Constants.secretKey,
+            redirectURI: Constants.redirectURI,
+            accessScope: Constants.accessScope,
+            defaultBaseURL: Constants.defaultBaseURL,
+            getTokenURLString: Constants.unsplashGetTokenURLString,
+            authURLString: Constants.unsplashAuthorizeURLString
+        )
+    }
+}

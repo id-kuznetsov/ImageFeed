@@ -17,13 +17,8 @@ final class ImagesListPresenterSpy: ImagesListPresenterProtocol {
         viewDidLoadCalled = true
     }
     
-    func updatePhotos() {
-        
-    }
-    
-    func loadNextPage(indexPath: IndexPath) {
-        
-    }
+    func updatePhotos() {}
+    func loadNextPage(indexPath: IndexPath) {}
     
     func getPhoto(for index: Int) -> ImageFeed.Photo {
         Photo(
@@ -41,13 +36,9 @@ final class ImagesListPresenterSpy: ImagesListPresenterProtocol {
         return 10
     }
     
-    func didTapLike(for index: Int, in cell: ImageFeed.ImagesListCell) {
-        
-    }
+    func didTapLike(for index: Int, in cell: ImageFeed.ImagesListCell) {}
     
     func updateLike(for index: Int, isLiked: Bool) {
         likePhotoCalled = true
     }
-    
-    
 }

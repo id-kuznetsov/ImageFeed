@@ -17,22 +17,13 @@ final class ProfilePresenterSpy: ProfilePresenterProtocol {
         viewDidLoadCalled = true
     }
     
-    func loadProfile() {
-        
-    }
-    
-    func loadAvatar() {
-        
-    }
+    func loadProfile() {}
+    func loadAvatar() {}
     
     func didTapLogout() {
         logoutCalled = true
         view?.showExitAlert()
     }
     
-    func logout() {
-        
-    }
-    
-    
+    func logout() {}
 }
