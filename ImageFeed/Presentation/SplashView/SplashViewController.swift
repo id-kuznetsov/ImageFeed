@@ -110,14 +110,12 @@ final class SplashViewController: UIViewController {
 
 extension SplashViewController: AuthViewControllerDelegate {
     func didAuthenticate(_ vc: AuthViewController) {
+        vc.dismiss(animated: true)
         guard let token = storage.token else {
             return
         }
         fetchProfile(token: token)
         didFetchProfile = true
-        vc.dismiss(animated: true)
-        
-        switchToTabBarController()
     }
 }
 

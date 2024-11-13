@@ -22,6 +22,7 @@ final class ImagesListCell: UITableViewCell {
     
     private let imagesListService = ImagesListService.shared
     private let isoFormatter = ISO8601DateFormatter()
+    
     private lazy var dateFormatter: DateFormatter = {
         let formatter = DateFormatter()
         formatter.dateStyle = .long
@@ -42,6 +43,7 @@ final class ImagesListCell: UITableViewCell {
         guard let buttonImage = UIImage(named: "FavoritesNoActive") else { return UIButton() }
         let button = UIButton(type: .custom)
         button.setImage(buttonImage, for: .normal)
+        button.accessibilityIdentifier = "Like button"
         button.addTarget(self, action: #selector(didTapLikeButton), for: .touchUpInside)
         return button
     }()

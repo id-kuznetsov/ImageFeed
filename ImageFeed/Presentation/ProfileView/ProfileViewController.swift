@@ -8,12 +8,14 @@
 import UIKit
 import Kingfisher
 
-final class ProfileViewController: UIViewController {
+final class ProfileViewController: UIViewController, ProfileViewControllerProtocol {
+    
+    // MARK: - Public Properties
+  
+    var presenter: ProfilePresenterProtocol?
     
     // MARK: - Private Properties
-    
-    private let profileService = ProfileService.shared
-    private let profileLogoutService = ProfileLogoutService.shared
+
     private var profileImageServiceObserver: NSObjectProtocol?
     private var imageCache = ImageCache.default
     
@@ -63,6 +65,7 @@ final class ProfileViewController: UIViewController {
             target: self,
             action: #selector(self.didLogoutButtonTapped)
         )
+        button.accessibilityIdentifier = ("Logout button")
         button.tintColor = .ypRed
         return button
     }()
@@ -115,6 +118,7 @@ final class ProfileViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         setProfileView()
+        presenter?.viewDidLoad()
         
         profileImageServiceObserver = NotificationCenter.default
             .addObserver(
@@ -123,41 +127,43 @@ final class ProfileViewController: UIViewController {
                 queue: .main
             ) { [weak self] _ in
                 guard let self = self else { return }
-                self.updateAvatar()
+                self.presenter?.loadAvatar()
             }
-        updateAvatar()
     }
     
     // MARK: - Actions
     
     @objc
     private func didLogoutButtonTapped() {
-        profileInfoStackView.isHidden = true
-        profileImageView.image = UIImage(systemName: "person.crop.circle.fill")
-        profileImageView.tintColor = .ypGrey
-        showExitAlert()
-  
+        presenter?.didTapLogout()
+        hideProfileDetails()
     }
     
-    // MARK: - Private Methods
+    // MARK: - Public Methods
     
-    private func updateProfileDetails(profile: Profile) {
+    func configure(_ presenter: ProfilePresenterProtocol) {
+        self.presenter = presenter
+        presenter.view = self
+    }
+    
+    func updateProfileDetails(profile: Profile) {
         nameLabel.text = profile.name
         loginLabel.text = profile.loginName
         bioLabel.text = profile.bio
-        favouritesCountLabel.text = "\(profile.totalLikes)"
+        
+        if profile.totalLikes == 0 {
+            favouritesBackgroundView.isHidden = true
+            favouritesCountLabel.isHidden = true
+        } else {
+            favouritesCountLabel.text = "\(profile.totalLikes)"
+        }
     }
     
-    private func updateAvatar() {
-        imageCache.clearCache()
-        guard let profileImageURL = ProfileImageService.shared.avatarURL,
-              let url = URL(string: profileImageURL)
-        else {
-            return
-        }
+    func updateAvatar(url: URL) {
         profileImageView.kf.indicatorType = .activity
         profileImageView.kf.setImage(with: url,
-                                     placeholder: UIImage(systemName: "person.crop.circle.fill")
+                                     placeholder: UIImage(systemName: "person.crop.circle.fill"),
+                                     options: [.fromMemoryCacheOrRefresh]
         ){ result in
             switch result {
             case .success(let value):
@@ -169,7 +175,7 @@ final class ProfileViewController: UIViewController {
         }
     }
     
-    private func showExitAlert() {
+    func showExitAlert() {
         let alertModel = AlertModel(
             title: "Пока, пока!",
             message: "Уверены что хотите выйти?",
@@ -177,26 +183,22 @@ final class ProfileViewController: UIViewController {
             cancelButtonText: "Да",
             completion: { [weak self] in
                 guard let self else { return }
-                self.updateAvatar()
+                self.presenter?.loadAvatar()
                 profileInfoStackView.isHidden = false
                 self.dismiss(animated: true)
             },
             cancelCompletion: { [weak self] in
                 guard let self else { return }
                 self.imageCache.clearCache()
-                self.profileLogoutService.logout()
+                self.presenter?.logout()
             }
         )
         AlertPresenter.showAlert(alertModel, delegate: self)
     }
     
+    // MARK: - Private Methods
+
     private func setProfileView() {
-        guard let profile = profileService.profile else {
-            print("No profile data")
-            return
-        }
-        updateProfileDetails(profile: profile)
-        
         view.backgroundColor = .ypBlack
         addLabelsInProfileInfoStackView()
         favouritesBackgroundView.addSubview(favouritesCountLabel)
@@ -217,10 +219,6 @@ final class ProfileViewController: UIViewController {
             emptyFavouritesStackViewConstraints() +
             emptyFavouritesImageViewConstraints()
         )
-        
-        if profile.totalLikes == 0 {
-            favouritesBackgroundView.isHidden = true
-        }
     }
     
     private func addLabelsInProfileInfoStackView() {
@@ -233,6 +231,11 @@ final class ProfileViewController: UIViewController {
         emptyFavouritesStackView.addArrangedSubview(emptyFavouritesImageView)
     }
     
+    private func hideProfileDetails() {
+        profileInfoStackView.isHidden = true
+        profileImageView.image = UIImage(systemName: "person.crop.circle.fill")
+        profileImageView.tintColor = .ypGrey
+    }
     
     // MARK: - Constraints
     
@@ -243,6 +246,7 @@ final class ProfileViewController: UIViewController {
          profileImageView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 32)
         ]
     }
+    
     private func exitButtonViewConstraints() -> [NSLayoutConstraint] {
         [exitButton.widthAnchor.constraint(equalToConstant: Constants.buttonsSize),
          exitButton.heightAnchor.constraint(equalToConstant: Constants.buttonsSize),
@@ -292,7 +296,6 @@ final class ProfileViewController: UIViewController {
         [emptyFavouritesImageView.widthAnchor.constraint(equalToConstant: Constants.emptyFavouritesSize),
          emptyFavouritesImageView.heightAnchor.constraint(equalToConstant: Constants.emptyFavouritesSize)]
     }
-    
 }
 
 // MARK: - Extensions
@@ -313,5 +316,3 @@ extension ProfileViewController: AlertPresenterDelegate {
         present(alert, animated: true)
     }
 }
-
-
