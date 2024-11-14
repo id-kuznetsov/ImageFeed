@@ -110,6 +110,8 @@ extension ImagesListViewController {
     }
 }
 
+// MARK: UITableViewDataSource
+
 extension ImagesListViewController: UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         presenter?.numberOfPhotos() ?? 0
@@ -136,6 +138,8 @@ extension ImagesListViewController: UITableViewDataSource {
         return imageListCell
     }
 }
+
+// MARK: UITableViewDelegate
 
 extension ImagesListViewController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
@@ -170,6 +174,8 @@ extension ImagesListViewController: UITableViewDelegate {
         present(singleImage, animated: true)
     }
 }
+
+// MARK: ImagesListCellDelegate
 
 extension ImagesListViewController: ImagesListCellDelegate {
     func imageListCellDidTapLike(_ cell: ImagesListCell) {

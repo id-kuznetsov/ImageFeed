@@ -10,7 +10,9 @@ import Foundation
 protocol ProfileViewControllerProtocol: AnyObject {
     var presenter: ProfilePresenterProtocol? { get set }
     
-    func updateProfileDetails(profile: Profile)
-    func updateAvatar(url: URL)
+    func configProfileInfoCell(for cell: ProfileInfoCell, with profile: Profile, avatarURL: URL)
+    func updateTableViewAnimated(from oldCount: Int, to newCount: Int)
+    func blockInteraction(_ state: Bool)
     func showExitAlert()
+    func showError()
 }

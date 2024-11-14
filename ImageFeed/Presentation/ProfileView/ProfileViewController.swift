@@ -9,7 +9,7 @@ import UIKit
 import Kingfisher
 
 final class ProfileViewController: UIViewController, ProfileViewControllerProtocol {
-    
+
     // MARK: - Public Properties
   
     var presenter: ProfilePresenterProtocol?
@@ -19,81 +19,17 @@ final class ProfileViewController: UIViewController, ProfileViewControllerProtoc
     private var profileImageServiceObserver: NSObjectProtocol?
     private var imageCache = ImageCache.default
     
-    private lazy var profileImageView: UIImageView = {
-        let profileImage = UIImageView()
-        profileImage.backgroundColor = .ypBlack
-        profileImage.layer.masksToBounds = true
-        profileImage.frame.size = CGSize(width: 70, height: 70)
-        profileImage.layer.cornerRadius = profileImage.frame.size.width / 2
-        profileImage.image = UIImage(systemName: "person.crop.circle.fill")
-        profileImage.tintColor = .ypGrey
-        return profileImage
-    }()
-    
-    private lazy var profileInfoStackView: UIStackView = {
-        let stackView = UIStackView()
-        stackView.axis = .vertical
-        stackView.spacing = 8
-        return stackView
-    }()
-    
-    private lazy var nameLabel: UILabel = {
-        let nameLabel = UILabel()
-        nameLabel.textColor = .ypWhite
-        nameLabel.font = .boldSystemFont(ofSize: 23)
-        return nameLabel
-    }()
-    
-    private lazy var loginLabel: UILabel = {
-        let loginLabel = UILabel()
-        loginLabel.textColor = .ypGrey
-        loginLabel.font = .systemFont(ofSize: 13)
-        return loginLabel
-    }()
-    
-    private lazy var bioLabel: UILabel = {
-        let statusLabel = UILabel()
-        statusLabel.textColor = .ypWhite
-        statusLabel.font = .systemFont(ofSize: 13)
-        return statusLabel
-    }()
-    
-    private lazy var exitButton: UIButton = {
-        guard let buttonImage = UIImage(systemName: "ipad.and.arrow.forward") else { return UIButton() }
-        let button = UIButton.systemButton(
-            with: buttonImage,
-            target: self,
-            action: #selector(self.didLogoutButtonTapped)
-        )
-        button.accessibilityIdentifier = ("Logout button")
-        button.tintColor = .ypRed
-        return button
-    }()
-    
-    private lazy var favouritesLabel: UILabel = {
-        let favouritesLabel = UILabel()
-        favouritesLabel.text = "Избранное"
-        favouritesLabel.textColor = .ypWhite
-        favouritesLabel.font = .boldSystemFont(ofSize: 23)
-        return favouritesLabel
-    }()
-    
-    private lazy var favouritesCountLabel: UILabel = {
-        let favouritesLabel = UILabel()
-        favouritesLabel.textColor = .ypWhite
-        favouritesLabel.font = .systemFont(ofSize: 13)
-        favouritesLabel.textAlignment = .center
-        favouritesLabel.translatesAutoresizingMaskIntoConstraints = false
-        return favouritesLabel
-    }()
-    
-    private lazy var favouritesBackgroundView: UIView = {
-        let favouritesBackgroundView = UIView()
-        favouritesBackgroundView.backgroundColor = .ypBlue
-        favouritesBackgroundView.layer.cornerRadius = 11
-        favouritesBackgroundView.layer.masksToBounds = true
-        favouritesBackgroundView.layoutMargins = UIEdgeInsets(top: 0, left: 12, bottom: 0, right: 12)
-        return favouritesBackgroundView
+    private lazy var tableView: UITableView = {
+        let tableView = UITableView()
+        tableView.register(ProfileInfoCell.self, forCellReuseIdentifier: ProfileInfoCell.reuseIdentifier)
+        tableView.register(ImagesListCell.self, forCellReuseIdentifier: ImagesListCell.reuseIdentifier)
+        tableView.backgroundColor = .ypBlack
+        tableView.dataSource = self
+        tableView.delegate = self
+        tableView.translatesAutoresizingMaskIntoConstraints = false
+        tableView.estimatedRowHeight = 200
+        tableView.separatorStyle = .none
+        return tableView
     }()
     
     private lazy var emptyFavouritesStackView: UIStackView = {
@@ -127,16 +63,22 @@ final class ProfileViewController: UIViewController, ProfileViewControllerProtoc
                 queue: .main
             ) { [weak self] _ in
                 guard let self = self else { return }
-                self.presenter?.loadAvatar()
+                self.presenter?.updateLikedPhotos()
             }
+        
+        NotificationCenter.default.addObserver(
+            forName: ImagesListService.didChangeNotification,
+            object: nil,
+            queue: .main
+        ) { [weak self] _ in
+            self?.presenter?.updateLikedPhotos()
+        }
+
+        tableView.contentInset = UIEdgeInsets(top: 12, left: 0, bottom: 12, right: 0)
     }
     
-    // MARK: - Actions
-    
-    @objc
-    private func didLogoutButtonTapped() {
-        presenter?.didTapLogout()
-        hideProfileDetails()
+    deinit {
+        NotificationCenter.default.removeObserver(self)
     }
     
     // MARK: - Public Methods
@@ -145,36 +87,32 @@ final class ProfileViewController: UIViewController, ProfileViewControllerProtoc
         self.presenter = presenter
         presenter.view = self
     }
-    
-    func updateProfileDetails(profile: Profile) {
-        nameLabel.text = profile.name
-        loginLabel.text = profile.loginName
-        bioLabel.text = profile.bio
-        
-        if profile.totalLikes == 0 {
-            favouritesBackgroundView.isHidden = true
-            favouritesCountLabel.isHidden = true
-        } else {
-            favouritesCountLabel.text = "\(profile.totalLikes)"
-        }
-    }
-    
-    func updateAvatar(url: URL) {
-        profileImageView.kf.indicatorType = .activity
-        profileImageView.kf.setImage(with: url,
-                                     placeholder: UIImage(systemName: "person.crop.circle.fill"),
-                                     options: [.fromMemoryCacheOrRefresh]
-        ){ result in
-            switch result {
-            case .success(let value):
-                print("Image loaded from \(value.cacheType)")
-                print("Image source:\(value.source)")
-            case .failure(let error):
-                print("Failed updateAvatar with error: \(error.localizedDescription)")
+
+    func updateTableViewAnimated(from oldCount: Int, to newCount: Int) {
+        tableView.performBatchUpdates {
+            let indexPaths = (oldCount..<newCount).map { i in
+                IndexPath(row: i, section: 0)
             }
-        }
+            tableView.insertRows(at: indexPaths, with: .automatic)
+        } completion: { _ in }
     }
     
+    func configProfileInfoCell(for cell: ProfileInfoCell, with profile: Profile, avatarURL: URL) {
+        cell.configProfileInfo(with: profile, avatarURL: avatarURL)
+    }
+    
+    func configLikedCell(for cell: ImagesListCell, with indexPath: IndexPath) {
+        cell.configLikedCell(cell: cell, indexPath: indexPath)
+    }
+    
+    func blockInteraction(_ state: Bool) {
+        if state {
+            UIBlockingProgressHUD.show()
+        } else {
+            UIBlockingProgressHUD.dismiss()
+        }
+    }
+
     func showExitAlert() {
         let alertModel = AlertModel(
             title: "Пока, пока!",
@@ -183,8 +121,7 @@ final class ProfileViewController: UIViewController, ProfileViewControllerProtoc
             cancelButtonText: "Да",
             completion: { [weak self] in
                 guard let self else { return }
-                self.presenter?.loadAvatar()
-                profileInfoStackView.isHidden = false
+                self.updateAvatarInProfileCell()
                 self.dismiss(animated: true)
             },
             cancelCompletion: { [weak self] in
@@ -196,96 +133,48 @@ final class ProfileViewController: UIViewController, ProfileViewControllerProtoc
         AlertPresenter.showAlert(alertModel, delegate: self)
     }
     
+    func showError() {
+        let alertModel = AlertModel(
+            title: "Что-то пошло не так(",
+            message: "Не удалось изменить лайк",
+            buttonText: "OK",
+            completion: {}
+        )
+        AlertPresenter.showAlert(alertModel, delegate: self)
+    }
+    
     // MARK: - Private Methods
 
+    private func updateAvatarInProfileCell() {
+        let profileIndexPath = IndexPath(row: 0, section: 0)
+        
+        if let profileInfoCell = tableView.cellForRow(at: profileIndexPath) as? ProfileInfoCell {
+            guard let profile = presenter?.loadProfile(),
+                  let avatarURL = presenter?.loadAvatarURL() else {
+                print("No profile data \(#function) \(#file)")
+                return
+            }
+            configProfileInfoCell(for: profileInfoCell, with: profile, avatarURL: avatarURL)
+            profileInfoCell.hideProfileInfo(false)
+        }
+    }
+    
     private func setProfileView() {
         view.backgroundColor = .ypBlack
-        addLabelsInProfileInfoStackView()
-        favouritesBackgroundView.addSubview(favouritesCountLabel)
-        addFavouritesPlaceHolder()
-        
-        [profileImageView, exitButton, profileInfoStackView, favouritesLabel, favouritesBackgroundView, emptyFavouritesStackView].forEach{
-            $0.translatesAutoresizingMaskIntoConstraints = false
-            view.addSubview($0)
-        }
+        view.addSubview(tableView)
         
         NSLayoutConstraint.activate(
-            profileImageViewConstraints() +
-            exitButtonViewConstraints() +
-            profileStackViewConstraints() +
-            favouritesLabelViewConstraints() +
-            favouritesCountLabelViewConstraints() +
-            favouritesBackgroundViewConstraints() +
-            emptyFavouritesStackViewConstraints() +
-            emptyFavouritesImageViewConstraints()
+            [tableView.topAnchor.constraint(equalTo: view.topAnchor),
+             tableView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
+             tableView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+             tableView.trailingAnchor.constraint(equalTo: view.trailingAnchor)
+            ]
         )
-    }
-    
-    private func addLabelsInProfileInfoStackView() {
-        profileInfoStackView.addArrangedSubview(nameLabel)
-        profileInfoStackView.addArrangedSubview(loginLabel)
-        profileInfoStackView.addArrangedSubview(bioLabel)
-    }
-    
-    private func addFavouritesPlaceHolder() {
-        emptyFavouritesStackView.addArrangedSubview(emptyFavouritesImageView)
-    }
-    
-    private func hideProfileDetails() {
-        profileInfoStackView.isHidden = true
-        profileImageView.image = UIImage(systemName: "person.crop.circle.fill")
-        profileImageView.tintColor = .ypGrey
-    }
-    
-    // MARK: - Constraints
-    
-    private func profileImageViewConstraints() -> [NSLayoutConstraint] {
-        [profileImageView.widthAnchor.constraint(equalToConstant: Constants.profileImageSize),
-         profileImageView.heightAnchor.constraint(equalToConstant: Constants.profileImageSize),
-         profileImageView.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: Constants.leadingSize),
-         profileImageView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 32)
-        ]
-    }
-    
-    private func exitButtonViewConstraints() -> [NSLayoutConstraint] {
-        [exitButton.widthAnchor.constraint(equalToConstant: Constants.buttonsSize),
-         exitButton.heightAnchor.constraint(equalToConstant: Constants.buttonsSize),
-         exitButton.centerYAnchor.constraint(equalTo: profileImageView.centerYAnchor),
-         exitButton.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor, constant: -16)
-        ]
-    }
-    
-    private func profileStackViewConstraints() -> [NSLayoutConstraint] {
-        [profileInfoStackView.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: Constants.leadingSize),
-         profileInfoStackView.topAnchor.constraint(equalTo: profileImageView.bottomAnchor, constant: 8)
-        ]
-    }
-    
-    private func favouritesLabelViewConstraints() -> [NSLayoutConstraint] {
-        [favouritesLabel.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: Constants.leadingSize),
-         favouritesLabel.topAnchor.constraint(equalTo: profileImageView.bottomAnchor, constant: 100),
-         favouritesLabel.heightAnchor.constraint(equalToConstant: 22)
-        ]
-    }
-    
-    private func favouritesCountLabelViewConstraints() -> [NSLayoutConstraint] {
-        [favouritesCountLabel.leadingAnchor.constraint(equalTo: favouritesBackgroundView.layoutMarginsGuide.leadingAnchor),
-        favouritesCountLabel.trailingAnchor.constraint(equalTo: favouritesBackgroundView.layoutMarginsGuide.trailingAnchor),
-        favouritesCountLabel.topAnchor.constraint(equalTo: favouritesBackgroundView.layoutMarginsGuide.topAnchor),
-        favouritesCountLabel.bottomAnchor.constraint(equalTo: favouritesBackgroundView.layoutMarginsGuide.bottomAnchor)
-        ]
-    }
-    
-    private func favouritesBackgroundViewConstraints() -> [NSLayoutConstraint] {
-        [favouritesBackgroundView.leadingAnchor.constraint(equalTo: favouritesLabel.trailingAnchor, constant: 8),
-         favouritesBackgroundView.centerYAnchor.constraint(equalTo: favouritesLabel.centerYAnchor),
-         favouritesBackgroundView.heightAnchor.constraint(equalToConstant: 22)
-        ]
     }
     
     private func emptyFavouritesStackViewConstraints() -> [NSLayoutConstraint] {
         [emptyFavouritesStackView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-         emptyFavouritesStackView.topAnchor.constraint(equalTo: favouritesLabel.bottomAnchor),
+//         emptyFavouritesStackView.topAnchor.constraint(equalTo: favouritesLabel.bottomAnchor),
          emptyFavouritesStackView.bottomAnchor.constraint(equalTo: view.layoutMarginsGuide.bottomAnchor),
          emptyFavouritesStackView.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: Constants.leadingSize),
          emptyFavouritesStackView.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor, constant: -Constants.leadingSize)
@@ -300,12 +189,106 @@ final class ProfileViewController: UIViewController, ProfileViewControllerProtoc
 
 // MARK: - Extensions
 
+extension ProfileViewController: UITableViewDataSource {
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        return presenter?.numberOfRows() ?? 0
+    }
+    
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        if indexPath.row == 0 {
+            let cell = tableView.dequeueReusableCell(
+                withIdentifier: ProfileInfoCell.reuseIdentifier,
+                for: indexPath
+            )
+            
+            guard let profileInfoCell = cell as? ProfileInfoCell else {
+                assertionFailure("Construct profile cell failed")
+                return ProfileInfoCell()
+            }
+
+            profileInfoCell.delegate = self
+            guard let profile = presenter?.loadProfile(),
+                  let avatarURL = presenter?.loadAvatarURL() else {
+                print("No profile data \(#function) \(#file)")
+                return ProfileInfoCell()
+            }
+            
+            configProfileInfoCell(for: profileInfoCell, with: profile, avatarURL: avatarURL)
+            
+            return profileInfoCell
+        } else {
+            let cell = tableView.dequeueReusableCell(
+                withIdentifier: ImagesListCell.reuseIdentifier,
+                for: indexPath
+            )
+            
+            guard let imageListCell = cell as? ImagesListCell else {
+                assertionFailure("Construct cell failed")
+                return ImagesListCell()
+            }
+            
+            imageListCell.delegate = self
+            
+            configLikedCell(for: imageListCell, with: indexPath)
+            return imageListCell
+        }
+    }
+    
+    func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
+        presenter?.loadNextPage(indexPath: indexPath)
+    }
+}
+
+// MARK: UITableViewDelegate
+
+extension ProfileViewController: UITableViewDelegate {
+    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+        if indexPath.row == 0 {
+            return 220
+        } else {
+            guard let image = presenter?.getPhoto(for: indexPath.row - 1) else {
+                return 200
+            }
+           
+            let insets = UIEdgeInsets(
+                top: Constants.imageTopConstraint,
+                left: Constants.leadingSize,
+                bottom: Constants.imageBottomConstraint,
+                right: Constants.trailingSize
+            )
+            let imageWidth = image.size.width - insets.left - insets.right
+            let imageCellWidth = tableView.bounds.width
+            let scaleFactor = imageCellWidth / imageWidth
+            let imageCellHeight = image.size.height * scaleFactor + insets.left + insets.right
+            
+            return imageCellHeight
+        }
+    }
+}
+
+extension ProfileViewController: ProfileInfoCellDelegate {
+    func profileInfoDidTapExit() {
+        presenter?.didTapLogout()
+    }
+}
+
+extension ProfileViewController: ImagesListCellDelegate {
+    func imageListCellDidTapLike(_ cell: ImagesListCell) {
+        guard let indexPath = tableView.indexPath(for: cell) else { return }
+        presenter?.didTapLike(for: indexPath.row, in: cell)
+    }
+}
+
 extension ProfileViewController {
     private enum Constants {
         static let profileImageSize: CGFloat = 70
         static let buttonsSize: CGFloat = 70
-        static let leadingSize: CGFloat = 16
         static let emptyFavouritesSize: CGFloat = 115
+        
+        static let imageTopConstraint: CGFloat = 4
+        static let imageBottomConstraint: CGFloat = 4
+        static let leadingSize: CGFloat = 16
+        static let trailingSize: CGFloat = 16
     }
 }
 

@@ -11,8 +11,15 @@ protocol ProfilePresenterProtocol: AnyObject {
     var view: ProfileViewControllerProtocol? { get set }
     
     func viewDidLoad()
-    func loadProfile()
-    func loadAvatar()
+    func loadProfile() -> Profile?
+    func loadAvatarURL() -> URL?
     func didTapLogout()
     func logout()
+    
+    
+    func updateLikedPhotos()
+    func getPhoto(for index: Int) -> Photo
+    func numberOfRows() -> Int
+    func loadNextPage(indexPath: IndexPath)
+    func didTapLike(for index: Int, in cell: ImagesListCell)
 }
