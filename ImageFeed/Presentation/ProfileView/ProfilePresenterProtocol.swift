@@ -22,4 +22,5 @@ protocol ProfilePresenterProtocol: AnyObject {
     func numberOfRows() -> Int
     func loadNextPage(indexPath: IndexPath)
     func didTapLike(for index: Int, in cell: ImagesListCell)
+    func updateLike(for index: Int, isLiked: Bool)
 }

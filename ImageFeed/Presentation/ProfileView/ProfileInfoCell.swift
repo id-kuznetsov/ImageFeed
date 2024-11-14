@@ -7,7 +7,7 @@
 
 import UIKit
 
-class ProfileInfoCell: UITableViewCell {
+final class ProfileInfoCell: UITableViewCell {
     
     // MARK: - Constants
     

@@ -144,6 +144,8 @@ final class ImagesListCell: UITableViewCell {
             self.tableImage.image = UIImage(named: "placeholder")
         }
         
+        hideDateAndLikeButton(state: false)
+        
         if let imageDateString = imagesListService.likedPhotos[indexPath.row - 1].createdAt,
            let imageDate = isoFormatter.date(from: imageDateString) {
             dateLabel.text = dateFormatter.string(from: imageDate)
@@ -163,7 +165,19 @@ final class ImagesListCell: UITableViewCell {
         likeButton.setImage(image, for: .normal)
     }
     
+    func replaceImagesByPlaceholder() {
+        let image =  UIImage(named: "placeholder")
+        tableImage.image = image
+        hideDateAndLikeButton(state: true)
+    }
+    
+    
     // MARK: - Private Methods
+    
+    private func hideDateAndLikeButton(state: Bool) {
+        dateLabel.isHidden = state
+        likeButton.isHidden = state
+    }
     
     private func setCellUI() {
         guard tableImage.superview == nil else { return }

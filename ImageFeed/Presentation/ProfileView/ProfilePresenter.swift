@@ -92,6 +92,20 @@ final class ProfilePresenter: ProfilePresenterProtocol {
         }
     }
     
+    func updateLike(for index: Int, isLiked: Bool) {
+        let photo = likedPhotos[index]
+        let newPhoto = Photo(
+            id: photo.id,
+            size: photo.size,
+            createdAt: photo.createdAt,
+            welcomeDescription: photo.welcomeDescription,
+            thumbImageURL: photo.thumbImageURL,
+            largeImageURL: photo.largeImageURL,
+            isLiked: !photo.isLiked
+        )
+        self.likedPhotos[index] = newPhoto
+    }
+    
     func didTapLogout() {
         view?.showExitAlert()
     }

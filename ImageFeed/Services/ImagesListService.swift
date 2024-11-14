@@ -32,7 +32,7 @@ final class ImagesListService {
     private init() {}
     
     // MARK: - Public Methods
-
+    
     func fetchPhotosNextPage() {
         assert(Thread.isMainThread)
         
@@ -113,11 +113,11 @@ final class ImagesListService {
         self.likedPhotosTask = task
         task.resume()
     }
-
+    
     func changeLike(photoId: String, isLike: Bool, _ completion: @escaping (Result<Void, Error>) -> Void) {
         assert(Thread.isMainThread)
         likeTask?.cancel()
-
+        
         guard let request = makeLikeRequest(photoID: photoId, isLike: isLike) else {
             print("Make like request fail \(#file)")
             return
@@ -127,35 +127,52 @@ final class ImagesListService {
             guard let self else { return }
             switch result {
             case .success( _):
+                var isUpdated = false
+                
                 if let index = self.photos.firstIndex(where: { $0.id == photoId }) {
-                   let photo = self.photos[index]
-
-                   let newPhoto = Photo(
-                            id: photo.id,
-                            size: photo.size,
-                            createdAt: photo.createdAt, 
-                            welcomeDescription: photo.welcomeDescription,
-                            thumbImageURL: photo.thumbImageURL,
-                            largeImageURL: photo.largeImageURL,
-                            isLiked: !photo.isLiked
-                        )
-
+                    let photo = self.photos[index]
+                    
+                    let newPhoto = Photo(
+                        id: photo.id,
+                        size: photo.size,
+                        createdAt: photo.createdAt,
+                        welcomeDescription: photo.welcomeDescription,
+                        thumbImageURL: photo.thumbImageURL,
+                        largeImageURL: photo.largeImageURL,
+                        isLiked: !photo.isLiked
+                    )
+                    
                     self.photos[index] = newPhoto
                     
+                    isUpdated = true
+                }
+                
+                if let index = self.likedPhotos.firstIndex(where: { $0.id == photoId }) {
+                    let photo = self.likedPhotos[index]
+                    
+                    let newPhoto = Photo(
+                        id: photo.id,
+                        size: photo.size,
+                        createdAt: photo.createdAt,
+                        welcomeDescription: photo.welcomeDescription,
+                        thumbImageURL: photo.thumbImageURL,
+                        largeImageURL: photo.largeImageURL,
+                        isLiked: !photo.isLiked
+                    )
+                    
+                    self.likedPhotos[index] = newPhoto
+                    
+                    isUpdated = true
+                }
+                
+                if isUpdated {
                     NotificationCenter.default
                         .post(
                             name: ImagesListService.didChangeNotification,
-                            object: self,
-                            userInfo: ["photos": ImagesListService.didChangeNotification]
+                            object: self
                         )
                     completion(.success(()))
                 }
-                
-//                if let index = self.likedPhotos.firstIndex(where: { $0.id == photoId }) {
-//                    
-//                }
-                
-                
             case .failure(let error):
                 print("Error in \(#function) \(#file): \(error.localizedDescription)")
                 completion(.failure(error))
@@ -172,7 +189,7 @@ final class ImagesListService {
     }
     
     // MARK: - Private Methods
-  
+    
     private func makePhotosRequest(page: String) -> URLRequest? {
         let photoGetURL = URL(string: "photos", relativeTo: Constants.defaultBaseURL)
         guard let photoGetURL else {
@@ -227,7 +244,7 @@ final class ImagesListService {
             print("Unable to construct URL for photos Request")
             return nil
         }
-
+        
         let method = isLike ? "POST" : "DELETE"
         
         return createRequest(withURL: likeURL, httpMethod: method)

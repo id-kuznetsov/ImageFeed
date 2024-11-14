@@ -106,14 +106,12 @@ final class ProfileViewController: UIViewController, ProfileViewControllerProtoc
     }
     
     func blockInteraction(_ state: Bool) {
-        if state {
-            UIBlockingProgressHUD.show()
-        } else {
-            UIBlockingProgressHUD.dismiss()
-        }
+        state ? UIBlockingProgressHUD.show() : UIBlockingProgressHUD.dismiss()
     }
 
     func showExitAlert() {
+        replaceImagesByPlaceholder()
+
         let alertModel = AlertModel(
             title: "Пока, пока!",
             message: "Уверены что хотите выйти?",
@@ -122,6 +120,7 @@ final class ProfileViewController: UIViewController, ProfileViewControllerProtoc
             completion: { [weak self] in
                 guard let self else { return }
                 self.updateAvatarInProfileCell()
+                self.cancelExitAction()
                 self.dismiss(animated: true)
             },
             cancelCompletion: { [weak self] in
@@ -159,6 +158,21 @@ final class ProfileViewController: UIViewController, ProfileViewControllerProtoc
         }
     }
     
+    private func replaceImagesByPlaceholder() {
+        for case let cell as ImagesListCell in tableView.visibleCells {
+            cell.replaceImagesByPlaceholder()
+        }
+    }
+    
+    private func cancelExitAction() {
+        let visibleCells = tableView.visibleCells.compactMap { $0 as? ImagesListCell }
+        
+        for (index, cell) in visibleCells.enumerated() {
+            let indexPath = IndexPath(row: index + 1, section: 0)
+            configLikedCell(for: cell, with: indexPath)
+        }
+    }
+    // TODO: if no likes in profile‼️
     private func setProfileView() {
         view.backgroundColor = .ypBlack
         view.addSubview(tableView)
@@ -188,7 +202,7 @@ final class ProfileViewController: UIViewController, ProfileViewControllerProtoc
 }
 
 // MARK: - Extensions
-
+// MARK: UITableViewDataSource
 extension ProfileViewController: UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return presenter?.numberOfRows() ?? 0
@@ -264,7 +278,23 @@ extension ProfileViewController: UITableViewDelegate {
             return imageCellHeight
         }
     }
+    
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        if indexPath.row == 0 { return }
+        let singleImage = SingleImageViewController()
+        singleImage.delegate = self
+        singleImage.indexPath = indexPath
+        let photo = presenter?.getPhoto(for: indexPath.row - 1)
+        guard let largeImageURL = photo?.largeImageURL else { return }
+        let isLiked = photo?.isLiked ?? false
+        let photoID = photo?.id ?? ""
+        singleImage.setImageFromURL(fullImageURL: largeImageURL, isLiked: isLiked, photoID: photoID)
+        singleImage.modalPresentationStyle = .overFullScreen
+        present(singleImage, animated: true)
+    }
 }
+
+// MARK: ProfileInfoCellDelegate
 
 extension ProfileViewController: ProfileInfoCellDelegate {
     func profileInfoDidTapExit() {
@@ -272,12 +302,16 @@ extension ProfileViewController: ProfileInfoCellDelegate {
     }
 }
 
+// MARK: ImagesListCellDelegate
+
 extension ProfileViewController: ImagesListCellDelegate {
     func imageListCellDidTapLike(_ cell: ImagesListCell) {
         guard let indexPath = tableView.indexPath(for: cell) else { return }
-        presenter?.didTapLike(for: indexPath.row, in: cell)
+        presenter?.didTapLike(for: indexPath.row - 1, in: cell)
     }
 }
+
+// MARK: Constants
 
 extension ProfileViewController {
     private enum Constants {
@@ -289,6 +323,18 @@ extension ProfileViewController {
         static let imageBottomConstraint: CGFloat = 4
         static let leadingSize: CGFloat = 16
         static let trailingSize: CGFloat = 16
+    }
+}
+
+// MARK: SingleImageViewControllerDelegate
+
+extension ProfileViewController: SingleImageViewControllerDelegate {
+    func didUpdateLikeStatus(for indexPath: IndexPath, isLiked: Bool) {
+        presenter?.updateLike(for: indexPath.row - 1, isLiked: isLiked)
+        
+        if let cell = tableView.cellForRow(at: indexPath) as? ImagesListCell {
+            cell.setIsLiked(isLiked)
+        }
     }
 }
 

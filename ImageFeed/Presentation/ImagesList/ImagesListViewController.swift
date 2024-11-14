@@ -69,11 +69,7 @@ final class ImagesListViewController: UIViewController, ImagesListViewController
     }
     
     func blockInteraction(_ state: Bool) {
-        if state {
-            UIBlockingProgressHUD.show()
-        } else {
-            UIBlockingProgressHUD.dismiss()
-        }
+        state ? UIBlockingProgressHUD.show() : UIBlockingProgressHUD.dismiss()
     }
     
     func showError() {
@@ -200,6 +196,8 @@ extension ImagesListViewController: AlertPresenterDelegate {
         present(alert, animated: true)
     }
 }
+
+// MARK: SingleImageViewControllerDelegate
 
 extension ImagesListViewController: SingleImageViewControllerDelegate {
     func didUpdateLikeStatus(for indexPath: IndexPath, isLiked: Bool) {

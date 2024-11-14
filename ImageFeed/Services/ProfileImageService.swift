@@ -41,7 +41,7 @@ final class ProfileImageService {
             guard let self else { return }
             switch result {
             case .success(let profileImageData):
-                self.avatarURL = profileImageData.profileImage.medium
+                self.avatarURL = profileImageData.profileImage.large
                 
                 guard let profileImageURL = self.avatarURL else {
                     print("Unable to get image")
