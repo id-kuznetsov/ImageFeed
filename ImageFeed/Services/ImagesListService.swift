@@ -128,6 +128,7 @@ final class ImagesListService {
             switch result {
             case .success( _):
                 var isUpdated = false
+                var updatedPhoto: Photo? = nil
                 
                 if let index = self.photos.firstIndex(where: { $0.id == photoId }) {
                     let photo = self.photos[index]
@@ -145,6 +146,7 @@ final class ImagesListService {
                     self.photos[index] = newPhoto
                     
                     isUpdated = true
+                    updatedPhoto = newPhoto
                 }
                 
                 if let index = self.likedPhotos.firstIndex(where: { $0.id == photoId }) {
@@ -163,13 +165,15 @@ final class ImagesListService {
                     self.likedPhotos[index] = newPhoto
                     
                     isUpdated = true
+                    updatedPhoto = newPhoto
                 }
                 
-                if isUpdated {
+                if let updatedPhoto {
                     NotificationCenter.default
                         .post(
                             name: ImagesListService.didChangeNotification,
-                            object: self
+                            object: self,
+                            userInfo: ["updatedPhoto": updatedPhoto]
                         )
                     completion(.success(()))
                 }

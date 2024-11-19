@@ -10,7 +10,6 @@ import Foundation
 
 final class ProfilePresenterSpy: ProfilePresenterProtocol {
 
-    
     var view: ProfileViewControllerProtocol?
     var viewDidLoadCalled = false
     var logoutCalled = false
@@ -28,6 +27,7 @@ final class ProfilePresenterSpy: ProfilePresenterProtocol {
     }
     
     func updateLikedPhotos() {}
+    func updateLike(for index: Int, isLiked: Bool) {}
     
     func getPhoto(for index: Int) -> ImageFeed.Photo {
         Photo(

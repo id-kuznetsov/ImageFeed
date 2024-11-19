@@ -9,11 +9,10 @@ import Foundation
 @testable import ImageFeed
 
 final class ProfileViewControllerSpy: ProfileViewControllerProtocol {
+
     func blockInteraction(_ state: Bool) {}
     
-    func showError() {
-        <#code#>
-    }
+    func showError() {}
     
     var presenter: ImageFeed.ProfilePresenterProtocol?
     var exitAlertCalled: Bool = false
@@ -21,6 +20,7 @@ final class ProfileViewControllerSpy: ProfileViewControllerProtocol {
     
     func updateProfileDetails(profile: ImageFeed.Profile) {}
     func updateTableViewAnimated(from oldCount: Int, to newCount: Int) {}
+    func configProfileInfoCell(for cell: ImageFeed.ProfileInfoCell, with profile: ImageFeed.Profile, avatarURL: URL) {}
     
     func updateAvatar(url: URL) {
         viewUpdateAvatarCalled = true

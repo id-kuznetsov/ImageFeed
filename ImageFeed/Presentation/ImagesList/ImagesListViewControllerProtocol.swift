@@ -11,6 +11,7 @@ protocol ImagesListViewControllerProtocol: AnyObject {
     var presenter: ImagesListPresenterProtocol?  { get set }
 
     func updateTableViewAnimated(from oldCount: Int, to newCount: Int)
+    func updateCell(at index: Int)
     func blockInteraction(_ state: Bool)
     func showError()
 }

@@ -20,6 +20,13 @@ final class ImagesListPresenter: ImagesListPresenterProtocol {
     
     func viewDidLoad() {
         imagesListService.fetchPhotosNextPage()
+        
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(handleLikeChangeNotification(_:)),
+            name: ImagesListService.didChangeNotification,
+            object: nil
+        )
     }
     
     func updatePhotos() {
@@ -73,6 +80,17 @@ final class ImagesListPresenter: ImagesListPresenterProtocol {
             isLiked: !photo.isLiked
         )
         self.photos[index] = newPhoto
+    }
+    
+    @objc
+    private func handleLikeChangeNotification(_ notification: Notification) {
+        guard let userInfo = notification.userInfo,
+              let updatedPhoto = userInfo["updatedPhoto"] as? Photo,
+              let index = photos.firstIndex(where: { $0.id == updatedPhoto.id }) else { return }
+        
+        photos[index] = updatedPhoto
+
+        view?.updateCell(at: index)
     }
 }
 
