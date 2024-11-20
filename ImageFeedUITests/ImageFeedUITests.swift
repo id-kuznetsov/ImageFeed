@@ -7,6 +7,13 @@
 
 import XCTest
 
+private enum personalData {
+    static let email: String = "Paste your email here"
+    static let password: String = "Paste your password here"
+    static let name: String = "Paste your name here"
+    static let login: String = "Paste your login here(@example)"
+}
+
 final class ImageFeedUITests: XCTestCase {
     
     private let app = XCUIApplication()
@@ -27,13 +34,13 @@ final class ImageFeedUITests: XCTestCase {
         let loginTextField = webView.descendants(matching: .textField).element
         XCTAssertTrue(loginTextField.waitForExistence(timeout: 5))
         loginTextField.tap()
-        loginTextField.typeText("Paste your email here")
+        loginTextField.typeText(personalData.email)
         webView.swipeUp()
         
         let passwordTextField = webView.descendants(matching: .secureTextField).element
         XCTAssertTrue(passwordTextField.waitForExistence(timeout: 5))
         passwordTextField.tap()
-        passwordTextField.typeText("Paste your password here")
+        passwordTextField.typeText(personalData.password)
         
         webView.swipeUp()
         
@@ -73,16 +80,16 @@ final class ImageFeedUITests: XCTestCase {
         sleep(1)
         app.tabBars.buttons.element(boundBy: 1).tap()
         
-        XCTAssertTrue(app.staticTexts["Paste your name here"].exists)
-        XCTAssertTrue(app.staticTexts["Paste your login here(@example)"].exists)
+        XCTAssertTrue(app.staticTexts[personalData.name].exists)
+        XCTAssertTrue(app.staticTexts[personalData.login].exists)
         
         
         app.buttons["Logout button"].tap()
         
         let alert = app.alerts["alert"]
         XCTAssertTrue(alert.exists)
-        XCTAssertFalse(app.staticTexts["Paste your name here"].exists)
-        XCTAssertFalse(app.staticTexts["Paste your login here(@example)"].exists)
+        XCTAssertFalse(app.staticTexts[personalData.name].exists)
+        XCTAssertFalse(app.staticTexts[personalData.login].exists)
         
         XCTAssertTrue(app.staticTexts["Пока, пока!"].exists)
         let yesButton = alert.scrollViews.otherElements.buttons["Да"]

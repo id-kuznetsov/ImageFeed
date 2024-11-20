@@ -31,6 +31,13 @@ final class ProfilePresenter: ProfilePresenterProtocol {
             return
         }
         imagesListService.fetchLikedPhotosNextPage(username: username)
+        
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(handleLikeChangeNotification(_:)),
+            name: ImagesListService.didChangeNotification,
+            object: nil
+        )
 
     }
     
@@ -112,5 +119,31 @@ final class ProfilePresenter: ProfilePresenterProtocol {
     
     func logout() {
         profileLogoutService.logout()
+    }
+    
+    
+    
+    @objc
+    private func handleLikeChangeNotification(_ notification: Notification) {
+        guard let userInfo = notification.userInfo,
+              let updatedPhoto = userInfo["updatedPhoto"] as? Photo,
+              let index = likedPhotos.firstIndex(where: { $0.id == updatedPhoto.id }) else { return }
+        
+        likedPhotos[index] = updatedPhoto
+
+        view?.updateCell(at: index)
+        
+        guard let likesCount = profileService.profile?.totalLikes else {
+            print("No likes data \(#function) \(#file)")
+            return
+        }
+        
+        if updatedPhoto.isLiked {
+            profileService.updateTotalLikes(likesCount + 1)
+            view?.updateLikeCount(likesCount + 1)
+        } else {
+            profileService.updateTotalLikes(likesCount - 1)
+            view?.updateLikeCount(likesCount - 1)
+        }
     }
 }

@@ -11,6 +11,8 @@ protocol ProfileViewControllerProtocol: AnyObject {
     var presenter: ProfilePresenterProtocol? { get set }
     
     func configProfileInfoCell(for cell: ProfileInfoCell, with profile: Profile, avatarURL: URL)
+    func updateCell(at index: Int)
+    func updateLikeCount(_ count: Int)
     func updateTableViewAnimated(from oldCount: Int, to newCount: Int)
     func blockInteraction(_ state: Bool)
     func showExitAlert()

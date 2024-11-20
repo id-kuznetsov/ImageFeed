@@ -65,6 +65,20 @@ final class ProfileService {
         task.resume()
     }
     
+    func updateTotalLikes(_ totalLikes: Int) {
+        guard let currentProfile = profile else {
+            print("No profile to update in \(#function)")
+            return
+        }
+        profile = Profile(
+            username: currentProfile.username,
+            name: currentProfile.name,
+            loginName: currentProfile.loginName,
+            bio: currentProfile.bio,
+            totalLikes: totalLikes // Новое значение
+        )
+    }
+    
     // MARK: - Private Methods
     
     private func makeProfileRequest(token: String) -> URLRequest? {

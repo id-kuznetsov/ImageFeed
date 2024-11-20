@@ -132,6 +132,21 @@ final class ProfileViewController: UIViewController, ProfileViewControllerProtoc
         AlertPresenter.showAlert(alertModel, delegate: self)
     }
     
+    func updateCell(at index: Int) {
+        let indexPath = IndexPath(row: index + 1, section: 0)
+        guard let cell = tableView.cellForRow(at: indexPath) as? ImagesListCell else { return }
+
+        let photo = presenter?.getPhoto(for: index)
+        guard let photo else { return }
+        
+        cell.setIsLiked(photo.isLiked)
+    }
+    
+    func updateLikeCount(_ count: Int) {
+        guard let cell = tableView.cellForRow(at: IndexPath(row: 0, section: 0)) as? ProfileInfoCell else { return }
+        cell.updateFavouritesCount(count)
+    }
+    
     func showError() {
         let alertModel = AlertModel(
             title: "Что-то пошло не так(",

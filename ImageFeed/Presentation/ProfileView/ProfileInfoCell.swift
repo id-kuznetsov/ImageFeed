@@ -133,6 +133,10 @@ final class ProfileInfoCell: UITableViewCell {
         favouritesCountLabel.text = "\(profile.totalLikes)"
     }
     
+    func updateFavouritesCount(_ count: Int) {
+        favouritesCountLabel.text = "\(count)"
+    }
+    
     func updateAvatar(url: URL) {
         profileImageView.kf.indicatorType = .activity
         profileImageView.kf.setImage(with: url,
